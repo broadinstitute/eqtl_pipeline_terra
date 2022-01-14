@@ -21,4 +21,4 @@ if __name__ == '__main__':
     ax.set_xlabel('# cells')
     ax.set_ylabel('# donors')
     fig.patch.set_facecolor('w')
-    plt.savefig(sys.argv[3], dpi=300)
+    plt.savefig(f'{sys.argv[3]}.cells_per_donor.png', dpi=300)
