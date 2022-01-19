@@ -9,8 +9,8 @@ if __name__ == '__main__':
     counts = anndata.read_h5ad(sys.argv[1])
 
     # plot
+    reads_all = counts.X.sum(axis=0).A.ravel()
     fig,ax = plt.subplots(facecolor='w')
-    reads_all = counts.X.A.sum(axis=0)
     ax.hist(reads_all, bins=100)
     ax.set_xlabel('# UMIs')
     ax.set_ylabel('# cells')

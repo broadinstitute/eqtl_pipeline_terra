@@ -64,11 +64,7 @@ task umis_per_cell {
     }
 
     runtime {
-        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v1"
-        memory: "${memory}GB"
-        disks: "local-disk ${disk_space} HDD"
-        cpu: "${num_threads}"
-        preemptible: "${num_preempt}"
+        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest"
     }
 
     output {
@@ -106,3 +102,9 @@ task cells_per_donor {
     }
 
 }
+
+
+	2. 02_filter_cells_donors
+		a. Downsample/cap high-UMI cells
+		b. Remove cells not assigned to donor
+		c. Remove donors with not enough cells
