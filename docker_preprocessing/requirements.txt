@@ -1,3 +1,5 @@
 anndata
 pandas
 matplotlib
+gtfparse
+numpy
