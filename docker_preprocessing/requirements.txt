@@ -3,3 +3,6 @@ pandas
 matplotlib
 gtfparse
 numpy
+qtl
+pyarrow
+fastparquet

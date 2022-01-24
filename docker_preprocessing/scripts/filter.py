@@ -30,13 +30,13 @@ if __name__ == '__main__':
 
     # plot
     reads_all = counts.X.sum(axis=0)
-    fig,ax = plt.subplots(facecolor='w')
-    ax.hist(reads_all, bins=100)
-    ax.set_xlabel('# UMIs')
-    ax.set_ylabel('# cells')
-    ax.set_title('after downsampling high-UMI cells')
-    fig.patch.set_facecolor('w')
-    plt.savefig(f'{sys.argv[6]}.umis_per_cell.postfilter.png', dpi=300)
+    # fig,ax = plt.subplots(facecolor='w')
+    # ax.hist(reads_all, bins=100)
+    # ax.set_xlabel('# UMIs')
+    # ax.set_ylabel('# cells')
+    # ax.set_title('after downsampling high-UMI cells')
+    # fig.patch.set_facecolor('w')
+    # plt.savefig(f'{sys.argv[6]}.umis_per_cell.postfilter.png', dpi=300)
 
     # filter to the gene list
     keep_genes = pd.read_csv(sys.argv[4], sep='\t', header=None) # the genes with top 50% expression
@@ -67,6 +67,7 @@ if __name__ == '__main__':
     gene_counts["end"] = gene_counts.index.map(gene_info.TSS) + 1
     gene_counts["strand"] = gene_counts.index.map(gene_info.strand)
 
+    # write out filtered count matrix
     gene_counts = gene_counts.reset_index()["chr start end gene gene strand".split() +
                                             donor_counts.index.tolist()]
     gene_counts.columns = "#chr start end gid pid strand".split() + donor_counts.index.tolist()
