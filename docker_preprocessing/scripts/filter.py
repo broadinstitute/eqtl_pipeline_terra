@@ -9,6 +9,7 @@ if __name__ == '__main__':
 
     # load counts
     counts = anndata.read_h5ad(sys.argv[1])
+    counts.obs_names_make_unique()
 
     # load cell to donor map
     cell_to_donor = pd.read_table(sys.argv[2])
