@@ -63,10 +63,11 @@ RUN pip3 -V \
    # As of 2021-09-10, this is the latest version of setuptools that works with pysam.
    # See https://pypi.org/project/setuptools/#history
    setuptools==58.0.1 --force-reinstall \
+   # setuptools==57.5.0 --force-reinstall \
    pysam --no-binary pysam \
    python-dateutil \
    pytz \
-   pyvcf \
+   pyvcf==0.4.3 \
    theano \
    tqdm \
    werkzeug \
@@ -76,6 +77,8 @@ RUN pip3 -V \
    wheel \
    plotnine \
    google-resumable-media \
+   qtl \
+   tensorqtl \
  # Remove this after https://broadworkbench.atlassian.net/browse/CA-1179
  # As of release [google-cloud-bigquery 1.26.0 (2020-07-20)](https://github.com/googleapis/python-bigquery/blob/master/CHANGELOG.md#1260-2020-07-20)
  # the BigQuery Python client uses the BigQuery Storage client by default.

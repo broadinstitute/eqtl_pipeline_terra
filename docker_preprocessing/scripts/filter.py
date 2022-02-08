@@ -63,7 +63,7 @@ if __name__ == '__main__':
     gene_counts = gene_counts[gene_counts.index.isin(gene_info.index)]
 
     # add other columns
-    gene_counts["chr"] = 'chr' + gene_counts.index.map(gene_info.seqname).astype(str)
+    gene_counts["chr"] = gene_counts.index.map(gene_info.seqname).astype(str)
     gene_counts["start"] = gene_counts.index.map(gene_info.TSS)
     gene_counts["end"] = gene_counts.index.map(gene_info.TSS) + 1
     gene_counts["strand"] = gene_counts.index.map(gene_info.strand)

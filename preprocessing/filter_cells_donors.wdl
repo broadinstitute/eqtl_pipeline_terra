@@ -111,7 +111,7 @@ task normalize {
     }
 
     runtime {
-        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v4"
+        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v5"
     }
 
     output {
