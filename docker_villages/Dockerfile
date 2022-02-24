@@ -1,3 +1,4 @@
+# From https://github.com/DataBiosphere/terra-docker/blob/master/terra-jupyter-python/Dockerfile
 FROM us.gcr.io/broad-dsp-gcr-public/terra-jupyter-base:1.0.3
 USER root
 # This makes it so pip runs as root, not the user.
@@ -50,7 +51,6 @@ RUN pip3 -V \
    cycler \
    h5py \
    html5lib \
-   anndata \
    joblib \
    # Remove the version pin for keras when tensorflow is updated to 2.7 or higher.
    keras \
@@ -77,6 +77,7 @@ RUN pip3 -V \
    wheel \
    plotnine \
    google-resumable-media \
+   anndata \
    qtl \
    tensorqtl \
  # Remove this after https://broadworkbench.atlassian.net/browse/CA-1179

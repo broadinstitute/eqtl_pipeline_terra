@@ -4,8 +4,10 @@ workflow filter_workflow {
 
     File counts
     File cell_donor_map
-    Int cell_per_donor_threshold
-    File gene_list
+    Int? cell_per_donor_threshold
+    Int? umis_per_cell_threshold
+    File? donor_list
+    File? gene_list
     File gene_gtf
     String prefix
 
@@ -22,6 +24,8 @@ workflow filter_workflow {
             counts=counts,
             cell_donor_map=cell_donor_map,
             cell_per_donor_threshold=cell_per_donor_threshold,
+            umis_per_cell_threshold=umis_per_cell_threshold,
+            donor_list=donor_list,
             gene_list=gene_list,
             gene_gtf=gene_gtf,
             prefix=prefix,
@@ -46,20 +50,24 @@ workflow filter_workflow {
 
     call copy2bucket.CopyFiles2Directory as copy_2 {
         input: 
-            files_2_copy=[normalize.parquet, normalize.bed],
+            files_2_copy=[normalize.parquet_tpm, normalize.bed_tpm, normalize.parquet_int, normalize.bed_int],
             output_gs_dir=output_gs_dir,
             dir_name=dir_name,
     }
 
-    call index {
+    call index as index_tpm {
         input:
-            bed=normalize.bed,
-            prefix=prefix,
+            bed=normalize.bed_tpm,
+    }
+
+    call index as index_int {
+        input:
+            bed=normalize.bed_int,
     }
 
     call copy2bucket.CopyFiles2Directory as copy_3 {
         input: 
-            files_2_copy=[index.bed_gz, index.index],
+            files_2_copy=[index_tpm.bed_gz, index_tpm.index, index_int.bed_gz, index_int.index],
             output_gs_dir=output_gs_dir,
             dir_name=dir_name,
     }
@@ -70,8 +78,10 @@ task filter {
     
     File counts
     File cell_donor_map
-    Int cell_per_donor_threshold
-    File gene_list
+    Int? cell_per_donor_threshold
+    Int? umis_per_cell_threshold
+    File? donor_list
+    File? gene_list
     File gene_gtf
     String prefix
 
@@ -82,11 +92,12 @@ task filter {
 
     command {
         set -euo pipefail
-        python /filter.py ${counts} ${cell_donor_map} ${cell_per_donor_threshold} ${gene_list} ${gene_gtf} ${prefix}
+        python /filter.py --donors ${default="ALL" donor_list} --genes ${default="ALL" gene_list} --thresh-umis ${default="0" umis_per_cell_threshold} \
+        --thresh-cells ${default="0" cell_per_donor_threshold} ${counts} ${cell_donor_map} ${prefix} ${gene_gtf}
     }
 
     runtime {
-        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v3"
+        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8"
         memory: "${memory}GB"
         disks: "local-disk ${disk_space} HDD"
         cpu: "${num_threads}"
@@ -111,12 +122,14 @@ task normalize {
     }
 
     runtime {
-        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v5"
+        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8"
     }
 
     output {
-        File parquet="${prefix}.normalized_expression.parquet"
-        File bed="${prefix}.normalized_expression.bed"
+        File parquet_tpm="${prefix}.TPM_expression.parquet"
+        File bed_tpm="${prefix}.TPM_expression.bed"
+        File parquet_int="${prefix}.normalized_expression.parquet"
+        File bed_int="${prefix}.normalized_expression.bed"
     }
 
 }
@@ -124,12 +137,12 @@ task normalize {
 task index {
 
     File bed
-    String prefix
+    String prefix = basename(bed, ".bed")
 
     command {
         set -euo pipefail
-        bgzip < ${bed} > ${prefix}.normalized_expression.bed.gz
-        tabix -p bed ${prefix}.normalized_expression.bed.gz
+        bgzip < ${bed} > ${prefix}.bed.gz
+        tabix -p bed ${prefix}.bed.gz
     }
 
     runtime {
@@ -137,8 +150,8 @@ task index {
     }
 
     output {
-        File bed_gz="${prefix}.normalized_expression.bed.gz"
-        File index="${prefix}.normalized_expression.bed.gz.tbi"
+        File bed_gz="${prefix}.bed.gz"
+        File index="${prefix}.bed.gz.tbi"
     }
 
 }

@@ -27,7 +27,7 @@ workflow make_qc_plots_workflow {
 
     call copy2bucket.CopyFiles2Directory as copy_1 {
         input: 
-            files_2_copy=[qc_plots.umi_cell_png,qc_plots.cell_donor_png],
+            files_2_copy=[qc_plots.umi_cell_png,qc_plots.gene_cell_png,qc_plots.cell_donor_png],
             output_gs_dir=output_gs_dir,
             dir_name=dir_name,
     }
@@ -51,7 +51,7 @@ task qc_plots {
     }
 
     runtime {
-        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v2"
+        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8"
         memory: "${memory}GB"
         disks: "local-disk ${disk_space} HDD"
         cpu: "${num_threads}"
@@ -60,6 +60,7 @@ task qc_plots {
 
     output {
         File umi_cell_png="${plot_prefix}.umis_per_cell.png"
+        File gene_cell_png="${plot_prefix}.genes_per_cell.png"
         File cell_donor_png="${plot_prefix}.cells_per_donor.png"
     }
 

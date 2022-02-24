@@ -1,47 +1,76 @@
-import sys
 import pandas as pd
 import numpy as np
 import anndata
 import matplotlib.pyplot as plt
 from gtfparse import read_gtf
+import argparse
+import scipy.sparse as spp
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--donors', dest='donor_list', type=str,
+                        help="donor IDs to keep", default="ALL")
+    parser.add_argument('--genes', dest='gene_list', type=str,
+                        help="genes to keep", default="ALL")
+    parser.add_argument('--thresh-umis', dest='thresh_umis', type=int,
+                        help="minimum # UMIs to keep a cell", default=0)
+    parser.add_argument('--thresh-cells', dest='thresh_cells', type=int,
+                        help="minimum # cells to keep a donor", default=0)
+    parser.add_argument(dest="counts", type=str,
+                        help="H5AD file of counts")
+    parser.add_argument(dest="donormap", type=str,
+                        help="cell to donor table")
+    parser.add_argument(dest="output_prefix", type=str,
+                        help="prefix for output files")
+    parser.add_argument(dest="gtf", type=str,
+                        help="GTF file of gene info")
+    args = parser.parse_args()
+
     # load counts
-    counts = anndata.read_h5ad(sys.argv[1])
+    counts = anndata.read_h5ad(args.counts)
     counts.obs_names_make_unique()
-
-    # load cell to donor map
-    cell_to_donor = pd.read_table(sys.argv[2])
-    cell_to_donor.columns = "cell donor".split()
-
-    # filter to cells not assigned to donor
-    cell_to_donor = cell_to_donor[cell_to_donor.cell.isin(counts.var_names)]
-
-    # filter out donors with less than 300 cells
-    thresh = int(sys.argv[3])
-    keep_donors = cell_to_donor['donor'].value_counts()[cell_to_donor['donor'].value_counts()>thresh].index
-    cell_to_donor = cell_to_donor[cell_to_donor.donor.isin(keep_donors)]
 
     # downsample high-UMI cells
     reads_all = counts.X.sum(axis=0).A.ravel()
     median_count = np.median(reads_all)
-    scale_factor = np.minimum(1, 2 * median_count / counts.X.A.sum(axis=0) ) # per cell scale factor 
+    scale_factor = np.minimum(1, 2 * median_count / counts.X.sum(axis=0).A.ravel() ) # per cell scale factor 
     counts = anndata.AnnData(counts.to_df() * scale_factor)
 
-    # plot
-    reads_all = counts.X.sum(axis=0)
-    # fig,ax = plt.subplots(facecolor='w')
-    # ax.hist(reads_all, bins=100)
-    # ax.set_xlabel('# UMIs')
-    # ax.set_ylabel('# cells')
-    # ax.set_title('after downsampling high-UMI cells')
-    # fig.patch.set_facecolor('w')
-    # plt.savefig(f'{sys.argv[6]}.umis_per_cell.postfilter.png', dpi=300)
+    # remove low-UMI cells
+    counts = anndata.AnnData(counts[:, reads_all>args.thresh_umis].to_df())
 
-    # filter to the gene list
-    keep_genes = pd.read_csv(sys.argv[4], sep='\t', header=None) # the genes with top 50% expression
-    keep_genes = keep_genes[0].values
+    # plot UMIs per cell
+    reads_all = counts.X.sum(axis=0)
+    fig,ax = plt.subplots(facecolor='w')
+    ax.hist(reads_all, bins=100)
+    ax.set_xlabel('# UMIs per cell')
+    ax.set_ylabel('# cells')
+    ax.set_title('after downsampling high-UMI cells')
+    fig.patch.set_facecolor('w')
+    plt.savefig(f'{args.output_prefix}.umis_per_cell.postfilter.png', dpi=300)
+
+    # load cell to donor map
+    cell_to_donor = pd.read_table(args.donormap)
+    cell_to_donor.columns = "cell donor".split()
+
+    # filter out cells not assigned to donor
+    cell_to_donor = cell_to_donor[cell_to_donor.cell.isin(counts.var_names)]
+
+    # filter out donors with not enough cells
+    keep_donors = cell_to_donor['donor'].value_counts()[cell_to_donor['donor'].value_counts()>args.thresh_cells].index
+    cell_to_donor = cell_to_donor[cell_to_donor.donor.isin(keep_donors)]
+
+    # filter to donor list 
+    if args.donor_list != 'ALL':
+        keep_donors = pd.read_csv(args.donor_list, sep='\t', header=None)[0].values
+        cell_to_donor = cell_to_donor[cell_to_donor.donor.isin(keep_donors)]
+    
+    # filter to gene list
+    if args.gene_list != 'ALL':
+        keep_genes = pd.read_csv(args.gene_list, sep='\t', header=None)[0].values
+    else:
+        keep_genes = counts.obs_names # all the genes in the count matrix 
 
     # sum counts to donors
     donor_counts = pd.DataFrame(columns=keep_genes)
@@ -49,12 +78,12 @@ if __name__ == '__main__':
         # group by donor
         donor_counts.loc[donor] = counts[keep_genes, cells.cell].X.sum(axis=1).ravel() 
     
-    # Tranpose to a Genes x Donors table
+    # tranpose to a Genes x Donors table
     gene_counts = donor_counts.T
     gene_counts.index.name = 'gene'
 
     # get gene info
-    gene_info = read_gtf(sys.argv[5])
+    gene_info = read_gtf(args.gtf)
     gene_info = gene_info.query("feature == 'gene'")
     gene_info = gene_info.groupby("gene_name").first().copy()
     gene_info['TSS'] = gene_info.start.where(gene_info.strand == '+', gene_info.end)
@@ -72,4 +101,4 @@ if __name__ == '__main__':
     gene_counts = gene_counts.reset_index()["chr start end gene gene strand".split() +
                                             donor_counts.index.tolist()]
     gene_counts.columns = "#chr start end gid pid strand".split() + donor_counts.index.tolist()
-    gene_counts.to_csv(f'{sys.argv[6]}.counts.filtered.txt', sep="\t", index=None)
+    gene_counts.to_csv(f'{args.output_prefix}.counts.filtered.txt', sep="\t", index=None)
