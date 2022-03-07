@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
   zlib1g-dev \
   libz-dev \
   libcurl4-openssl-dev \
+  r-base \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -80,6 +81,7 @@ RUN pip3 -V \
    anndata \
    qtl \
    tensorqtl \
+   rpy2 \
  # Remove this after https://broadworkbench.atlassian.net/browse/CA-1179
  # As of release [google-cloud-bigquery 1.26.0 (2020-07-20)](https://github.com/googleapis/python-bigquery/blob/master/CHANGELOG.md#1260-2020-07-20)
  # the BigQuery Python client uses the BigQuery Storage client by default.
