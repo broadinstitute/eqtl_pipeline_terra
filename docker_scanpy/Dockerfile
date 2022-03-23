@@ -84,6 +84,7 @@ RUN pip3 -V \
    scanpy \
    rpy2 \
    scipy \
+   anndata2ri \
    gcsfs --ignore-installed \
 
  # Remove this after https://broadworkbench.atlassian.net/browse/CA-1179
