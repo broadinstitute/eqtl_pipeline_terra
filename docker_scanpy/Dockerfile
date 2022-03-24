@@ -17,8 +17,11 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
   libz-dev \
   libcurl4-openssl-dev \
   r-base \
+  git \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+
+# RUN R -e "install.packages(c('class', 'Seurat'))"; \
 
 ENV HTSLIB_CONFIGURE_OPTIONS="--enable-gcs"
 
@@ -85,6 +88,8 @@ RUN pip3 -V \
    rpy2 \
    scipy \
    anndata2ri \
+   leidenalg \
+   git+https://github.com/atarashansky/SCTransformPy.git \
    gcsfs --ignore-installed \
 
  # Remove this after https://broadworkbench.atlassian.net/browse/CA-1179
