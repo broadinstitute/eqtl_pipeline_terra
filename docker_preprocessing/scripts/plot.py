@@ -10,7 +10,7 @@ if __name__ == '__main__':
     counts = anndata.read_h5ad(sys.argv[1])
 
     # plot umis per cell
-    reads_all = counts.X.sum(axis=0).A.ravel()
+    reads_all = counts.X.sum(axis=1).A.ravel()
     fig,ax = plt.subplots(facecolor='w')
     ax.hist(reads_all, bins=100)
     ax.set_xlabel('# UMIs per cell')
@@ -23,11 +23,11 @@ if __name__ == '__main__':
     cell_to_donor.columns = "cell donor".split()
 
     # filter to cells that exist
-    cell_to_donor = cell_to_donor[cell_to_donor.cell.isin(counts.var_names)]
+    cell_to_donor = cell_to_donor[cell_to_donor.cell.isin(counts.obs_names)]
 
     # plot genes per cell
     fig,ax = plt.subplots(facecolor='w')
-    ax.hist((counts.X != 0).sum(axis=0).A.ravel(), bins=100)
+    ax.hist((counts.X != 0).sum(axis=1).A.ravel(), bins=100)
     ax.set_xlabel('# genes per cell')
     ax.set_ylabel('# cells')
     fig.patch.set_facecolor('w')

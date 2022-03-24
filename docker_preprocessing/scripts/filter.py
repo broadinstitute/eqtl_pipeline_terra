@@ -29,19 +29,20 @@ if __name__ == '__main__':
 
     # load counts
     counts = anndata.read_h5ad(args.counts)
-    counts.obs_names_make_unique()
+    counts.var_names_make_unique()
 
     # downsample high-UMI cells
-    reads_all = counts.X.sum(axis=0).A.ravel()
+    reads_all = counts.X.sum(axis=1).A.ravel()
     median_count = np.median(reads_all)
-    scale_factor = np.minimum(1, 2 * median_count / counts.X.sum(axis=0).A.ravel() ) # per cell scale factor 
+    scale_factor = np.minimum(1, 2 * median_count / counts.X.sum(axis=1).A.ravel() ) # per cell scale factor 
+    scale_factor = np.expand_dims(scale_factor, axis=1)
     counts = anndata.AnnData(counts.to_df() * scale_factor)
 
     # remove low-UMI cells
-    counts = anndata.AnnData(counts[:, reads_all>args.thresh_umis].to_df())
+    counts = anndata.AnnData(counts[reads_all>args.thresh_umis, :].to_df())
 
     # plot UMIs per cell
-    reads_all = counts.X.sum(axis=0)
+    reads_all = counts.X.sum(axis=1)
     fig,ax = plt.subplots(facecolor='w')
     ax.hist(reads_all, bins=100)
     ax.set_xlabel('# UMIs per cell')
@@ -55,7 +56,7 @@ if __name__ == '__main__':
     cell_to_donor.columns = "cell donor".split()
 
     # filter out cells not assigned to donor
-    cell_to_donor = cell_to_donor[cell_to_donor.cell.isin(counts.var_names)]
+    cell_to_donor = cell_to_donor[cell_to_donor.cell.isin(counts.obs_names)]
 
     # filter out donors with not enough cells
     keep_donors = cell_to_donor['donor'].value_counts()[cell_to_donor['donor'].value_counts()>args.thresh_cells].index
@@ -70,13 +71,13 @@ if __name__ == '__main__':
     if args.gene_list != 'ALL':
         keep_genes = pd.read_csv(args.gene_list, sep='\t', header=None)[0].values
     else:
-        keep_genes = counts.obs_names # all the genes in the count matrix 
+        keep_genes = counts.var_names # all the genes in the count matrix 
 
     # sum counts to donors
     donor_counts = pd.DataFrame(columns=keep_genes)
     for donor, cells in cell_to_donor.groupby("donor"):
         # group by donor
-        donor_counts.loc[donor] = counts[keep_genes, cells.cell].X.sum(axis=1).ravel() 
+        donor_counts.loc[donor] = counts[cells.cell, keep_genes].X.sum(axis=0).ravel() 
     
     # tranpose to a Genes x Donors table
     gene_counts = donor_counts.T
