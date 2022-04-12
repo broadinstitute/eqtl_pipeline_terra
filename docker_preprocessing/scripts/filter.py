@@ -19,6 +19,8 @@ if __name__ == '__main__':
                         help="minimum # cells to keep a donor (default: %(default)s)", default=0)
     parser.add_argument('--downscale-median-factor', dest='downscale_median_factor', type=float,
                         help="factor times median to downscale high-UMI cells (default: %(default)s)", default=2.0)
+    parser.add_argument('--ignore-chr', dest='ignore_chrs', type=str,
+                        help="ignore genes on chromosome", action='append')
     parser.add_argument(dest="counts", type=str,
                         help="H5AD file of counts")
     parser.add_argument(dest="donormap", type=str,
@@ -96,7 +98,11 @@ if __name__ == '__main__':
     gene_info['TSS'] = gene_info.start.where(gene_info.strand == '+', gene_info.end)
 
     # drop unknown genes
-    gene_counts = gene_counts[gene_counts.index.isin(gene_info.index)]
+    if not args.ignore_chrs:
+        gene_counts = gene_counts[gene_counts.index.isin(gene_info.index)]
+    else:
+        keep_gene_info = ~gene_info.seqname.isin(args.ignore_chrs)
+        gene_counts = gene_counts[gene_counts.index.isin(gene_info[keep_gene_info].index)]
 
     # add other columns
     gene_counts["chr"] = gene_counts.index.map(gene_info.seqname).astype(str)
