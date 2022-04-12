@@ -17,6 +17,8 @@ if __name__ == '__main__':
                         help="minimum # UMIs to keep a cell (default: %(default)s)", default=0)
     parser.add_argument('--thresh-cells', dest='thresh_cells', type=int,
                         help="minimum # cells to keep a donor (default: %(default)s)", default=0)
+    parser.add_argument('--downscale-median-factor', dest='downscale_median_factor', type=float,
+                        help="factor times median to downscale high-UMI cells (default: %(default)s)", default=2.0)
     parser.add_argument(dest="counts", type=str,
                         help="H5AD file of counts")
     parser.add_argument(dest="donormap", type=str,
@@ -31,12 +33,16 @@ if __name__ == '__main__':
     counts = anndata.read_h5ad(args.counts)
     counts.var_names_make_unique()
 
-    # downscale high-UMI cells
     reads_all = counts.X.sum(axis=1).A.ravel()
-    median_count = np.median(reads_all)
-    scale_factor = np.minimum(1, 2 * median_count / counts.X.sum(axis=1).A.ravel())  # per cell scale factor
-    scale_factor = np.expand_dims(scale_factor, axis=1)
-    counts = anndata.AnnData(counts.to_df() * scale_factor)
+
+    if args.downscale_median_factor > 0:
+        # downscale high-UMI cells
+        median_count = np.median(reads_all)
+        scale_factor = np.minimum(1, args.downscale_median_factor * median_count / reads_all)  # per cell scale factor
+        scale_factor = np.expand_dims(scale_factor, axis=1)
+        counts = anndata.AnnData(counts.to_df() * scale_factor)
+    else:
+        counts = anndata.AnnData(counts.to_df())
 
     # remove low-UMI cells
     counts = anndata.AnnData(counts[reads_all > args.thresh_umis, :].to_df())
@@ -47,7 +53,7 @@ if __name__ == '__main__':
     ax.hist(reads_all, bins=100)
     ax.set_xlabel('# UMIs per cell')
     ax.set_ylabel('# cells')
-    ax.set_title('after downscale high-UMI cells')
+    ax.set_title(f'after downscale high-UMI cells above {args.downscale_median_factor:.2f} x median')
     fig.patch.set_facecolor('w')
     plt.savefig(f'{args.output_prefix}.umis_per_cell.postfilter.png', dpi=300)
 
