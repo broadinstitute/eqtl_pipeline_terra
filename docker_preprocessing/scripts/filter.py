@@ -1,4 +1,5 @@
 import argparse
+import math
 
 import anndata
 import matplotlib.pyplot as plt
@@ -17,6 +18,8 @@ if __name__ == '__main__':
                         help="minimum # UMIs to keep a cell (default: %(default)s)", default=0)
     parser.add_argument('--thresh-cells', dest='thresh_cells', type=int,
                         help="minimum # cells to keep a donor (default: %(default)s)", default=0)
+    parser.add_argument('--remove-pct-exp', dest='remove_pct_exp', type=float,
+                        help="remove the bottom percent of expressed genes (default: %(default)s)", default=0.0)
     parser.add_argument('--downscale-median-factor', dest='downscale_median_factor', type=float,
                         help="factor times median to downscale high-UMI cells (default: %(default)s)", default=2.0)
     parser.add_argument('--ignore-chr', dest='ignore_chrs', type=str,
@@ -78,6 +81,15 @@ if __name__ == '__main__':
     # filter to gene list
     if args.gene_list != 'ALL':
         keep_genes = pd.read_csv(args.gene_list, sep='\t', header=None)[0].values
+    elif 0 < args.remove_pct_exp < 100:
+        keep_genes_factor = (100 - args.remove_pct_exp) / 100.0
+        keep_genes_count = int(math.ceil(counts.n_vars * keep_genes_factor))
+        cell_counts = counts[cell_to_donor.cell, :]
+        expression_per_gene = cell_counts.X.sum(axis=0).ravel()
+        # Get the top keep_genes_count by index
+        # Via: https://stackoverflow.com/questions/6910641#answer-23734295
+        keep_genes_ind = np.argpartition(expression_per_gene, -keep_genes_count)[-keep_genes_count:]
+        keep_genes = cell_counts.var_names[keep_genes_ind]
     else:
         keep_genes = counts.var_names  # all the genes in the count matrix
 
