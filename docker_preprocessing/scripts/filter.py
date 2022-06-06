@@ -1,22 +1,29 @@
-import pandas as pd
-import numpy as np
+import argparse
+import math
+
 import anndata
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from gtfparse import read_gtf
-import argparse
-import scipy.sparse as spp
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--donors', dest='donor_list', type=str,
-                        help="donor IDs to keep", default="ALL")
+                        help="donor IDs to keep (default: %(default)s)", default="ALL")
     parser.add_argument('--genes', dest='gene_list', type=str,
-                        help="genes to keep", default="ALL")
+                        help="genes to keep (default: %(default)s)", default="ALL")
     parser.add_argument('--thresh-umis', dest='thresh_umis', type=int,
-                        help="minimum # UMIs to keep a cell", default=0)
+                        help="minimum # UMIs to keep a cell (default: %(default)s)", default=0)
     parser.add_argument('--thresh-cells', dest='thresh_cells', type=int,
-                        help="minimum # cells to keep a donor", default=0)
+                        help="minimum # cells to keep a donor (default: %(default)s)", default=0)
+    parser.add_argument('--remove-pct-exp', dest='remove_pct_exp', type=float,
+                        help="remove the bottom percent of expressed genes (default: %(default)s)", default=0.0)
+    parser.add_argument('--downscale-median-factor', dest='downscale_median_factor', type=float,
+                        help="factor times median to downscale high-UMI cells (default: %(default)s)", default=2.0)
+    parser.add_argument('--ignore-chr', dest='ignore_chrs', type=str,
+                        help="ignore genes on chromosome", action='append')
     parser.add_argument(dest="counts", type=str,
                         help="H5AD file of counts")
     parser.add_argument(dest="donormap", type=str,
@@ -31,23 +38,27 @@ if __name__ == '__main__':
     counts = anndata.read_h5ad(args.counts)
     counts.var_names_make_unique()
 
-    # downsample high-UMI cells
     reads_all = counts.X.sum(axis=1).A.ravel()
-    median_count = np.median(reads_all)
-    scale_factor = np.minimum(1, 2 * median_count / counts.X.sum(axis=1).A.ravel() ) # per cell scale factor 
-    scale_factor = np.expand_dims(scale_factor, axis=1)
-    counts = anndata.AnnData(counts.to_df() * scale_factor)
+
+    if args.downscale_median_factor > 0:
+        # downscale high-UMI cells
+        median_count = np.median(reads_all)
+        scale_factor = np.minimum(1, args.downscale_median_factor * median_count / reads_all)  # per cell scale factor
+        scale_factor = np.expand_dims(scale_factor, axis=1)
+        counts = anndata.AnnData(counts.to_df() * scale_factor)
+    else:
+        counts = anndata.AnnData(counts.to_df())
 
     # remove low-UMI cells
-    counts = anndata.AnnData(counts[reads_all>args.thresh_umis, :].to_df())
+    counts = anndata.AnnData(counts[reads_all > args.thresh_umis, :].to_df())
 
     # plot UMIs per cell
     reads_all = counts.X.sum(axis=1)
-    fig,ax = plt.subplots(facecolor='w')
+    fig, ax = plt.subplots(facecolor='w')
     ax.hist(reads_all, bins=100)
     ax.set_xlabel('# UMIs per cell')
     ax.set_ylabel('# cells')
-    ax.set_title('after downsampling high-UMI cells')
+    ax.set_title(f'after downscale high-UMI cells above {args.downscale_median_factor:.2f} x median')
     fig.patch.set_facecolor('w')
     plt.savefig(f'{args.output_prefix}.umis_per_cell.postfilter.png', dpi=300)
 
@@ -59,27 +70,36 @@ if __name__ == '__main__':
     cell_to_donor = cell_to_donor[cell_to_donor.cell.isin(counts.obs_names)]
 
     # filter out donors with not enough cells
-    keep_donors = cell_to_donor['donor'].value_counts()[cell_to_donor['donor'].value_counts()>args.thresh_cells].index
+    keep_donors = cell_to_donor['donor'].value_counts()[cell_to_donor['donor'].value_counts() > args.thresh_cells].index
     cell_to_donor = cell_to_donor[cell_to_donor.donor.isin(keep_donors)]
 
-    # filter to donor list 
+    # filter to donor list
     if args.donor_list != 'ALL':
         keep_donors = pd.read_csv(args.donor_list, sep='\t', header=None)[0].values
         cell_to_donor = cell_to_donor[cell_to_donor.donor.isin(keep_donors)]
-    
+
     # filter to gene list
     if args.gene_list != 'ALL':
         keep_genes = pd.read_csv(args.gene_list, sep='\t', header=None)[0].values
+    elif 0 < args.remove_pct_exp < 100:
+        keep_genes_factor = (100 - args.remove_pct_exp) / 100.0
+        keep_genes_count = int(math.ceil(counts.n_vars * keep_genes_factor))
+        cell_counts = counts[cell_to_donor.cell, :]
+        expression_per_gene = cell_counts.X.sum(axis=0).ravel()
+        # Get the top keep_genes_count by index
+        # Via: https://stackoverflow.com/questions/6910641#answer-23734295
+        keep_genes_ind = np.argpartition(expression_per_gene, -keep_genes_count)[-keep_genes_count:]
+        keep_genes = cell_counts.var_names[keep_genes_ind]
     else:
-        keep_genes = counts.var_names # all the genes in the count matrix 
+        keep_genes = counts.var_names  # all the genes in the count matrix
 
     # sum counts to donors
     donor_counts = pd.DataFrame(columns=keep_genes)
     for donor, cells in cell_to_donor.groupby("donor"):
         # group by donor
-        donor_counts.loc[donor] = counts[cells.cell, keep_genes].X.sum(axis=0).ravel() 
-    
-    # tranpose to a Genes x Donors table
+        donor_counts.loc[donor] = counts[cells.cell, keep_genes].X.sum(axis=0).ravel()
+
+    # transpose to a Genes x Donors table
     gene_counts = donor_counts.T
     gene_counts.index.name = 'gene'
 
@@ -90,7 +110,11 @@ if __name__ == '__main__':
     gene_info['TSS'] = gene_info.start.where(gene_info.strand == '+', gene_info.end)
 
     # drop unknown genes
-    gene_counts = gene_counts[gene_counts.index.isin(gene_info.index)]
+    if not args.ignore_chrs:
+        gene_counts = gene_counts[gene_counts.index.isin(gene_info.index)]
+    else:
+        keep_gene_info = ~gene_info.seqname.isin(args.ignore_chrs)
+        gene_counts = gene_counts[gene_counts.index.isin(gene_info[keep_gene_info].index)]
 
     # add other columns
     gene_counts["chr"] = gene_counts.index.map(gene_info.seqname).astype(str)
