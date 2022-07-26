@@ -1,0 +1,6 @@
+version: 1.2
+workflows:
+   - subclass: WDL
+     primaryDescriptorPath: /scEQTL_wdl.wdl
+     testParameterFiles:
+     - /test_params/sceqtl_inputs.json
