@@ -8,5 +8,6 @@ workflows:
      filters: 
         branches: 
           - main
+          - dev
         tags: 
           - /.*/
