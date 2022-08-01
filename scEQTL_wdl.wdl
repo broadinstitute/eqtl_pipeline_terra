@@ -4,8 +4,8 @@ version 1.0
 import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:dropseqannotatebam/versions/3/plain-WDL/descriptor" as annotate
 import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:DropulationAssignCellsToDonors/versions/10/plain-WDL/descriptor" as donorassign
 import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:DropulationDetectDoublets_maxerr/versions/2/plain-WDL/descriptor" as detectdoublets
-import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:remove-doublets/versions/3/plain-WDL/descriptor" as removedoublets
-import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:run_cellbender/versions/5/plain-WDL/descriptor" as cellbender
+import "tasks/remove_doublets.wdl" as removedoublets
+import "tasks/run_cellbender.wdl" as cellbender
 
 
 # This workflow takes cellranger data to grouped pseudobulk

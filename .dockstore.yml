@@ -1,6 +1,12 @@
 version: 1.2
 workflows:
-   - subclass: WDL
+   - name: "village-sceQTL"
+     subclass: WDL
      primaryDescriptorPath: /scEQTL_wdl.wdl
      testParameterFiles:
      - /test_params/sceqtl_inputs.json
+     filters: 
+        branches: 
+          - main
+        tags: 
+          - /.*/
