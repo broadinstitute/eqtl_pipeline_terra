@@ -1,8 +1,8 @@
 version 1.0
 
 # import other WDLs
-import "tasks/qc_plots.wdl" as qc
-import "tasks/copy_to_google_bucket.wdl" as copy2bucket
+import "../tasks/qc_plots.wdl" as qc
+import "../tasks/copy_to_google_bucket.wdl" as copy2bucket
 
 workflow make_qc_plots_workflow {
   input {
@@ -14,7 +14,7 @@ workflow make_qc_plots_workflow {
     String dir_name = ""
   }
 
-  call qc_plots {
+  call qc.qc_plots {
     input:
       counts=counts,
       cell_donor_map=cell_donor_map,

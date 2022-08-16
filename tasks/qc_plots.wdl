@@ -1,15 +1,16 @@
+version 1.0
 task qc_plots {
-  
-  File counts
-  File cell_donor_map
-  String prefix
-  String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
+  input {
+    File counts
+    File cell_donor_map
+    String prefix
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
 
-  Int memory=32
-  Int disk_space=32
-  Int num_threads=4
-  Int num_preempt=1
-
+    Int memory=32
+    Int disk_space=32
+    Int num_threads=4
+    Int num_preempt=1
+  }
   command {
     set -euo pipefail
     pip install anndata
@@ -77,37 +78,37 @@ task qc_plots {
             description: 'Count matrix',
             help: 'AnnData UMI count matrix (cells x genes)',
             example: 'counts.h5ad'
-        },
+        }
     cell_donor_map: {
             description: 'Cell to donor map',
-            help: 'TXT file of two tab-separated columns with header (header names do not matter). Col 1 = cell barcode, Col 2 = donor.'
+            help: 'TXT file of two tab-separated columns with header (header names do not matter). Col 1 = cell barcode, Col 2 = donor.',
             example: 'cell_donor_map.txt'
-        },
+        }
     prefix: {
             description: 'Prefix (ex. village name)',
-            help: 'String for output file prefix'
+            help: 'String for output file prefix',
             example: 'ips_D0'
-        },
+        }
     docker_image: {
             description: 'Docker image',
-            help: 'Docker image for preprocessing. Dependencies: Python 3'
+            help: 'Docker image for preprocessing. Dependencies: Python 3',
             example: 'us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
         }
 
     # Outputs
     umi_cell_png: {
             description: '# UMIs / cell histogram',
-            help: '# UMIs / cell histogram'
+            help: '# UMIs / cell histogram',
             example: 'ips_D0.umis_per_cell.png'
         }
     gene_cell_png: {
             description: '# genes / cell histogram',
-            help: '# genes / cell histogram'
+            help: '# genes / cell histogram',
             example: 'ips_D0.genes_per_cell.png'
         }
     cell_donor_png: {
             description: '# cells / donor histogram',
-            help: '# cells / donor histogram'
+            help: '# cells / donor histogram',
             example: 'ips_D0.cells_per_donor.png'
         }
   }
