@@ -17,7 +17,6 @@ workflows:
      primaryDescriptorPath: /workflows/pipeline_pt2.wdl
      filters: 
         branches: 
-          - main
           - dev
         tags: 
           - /.*/
