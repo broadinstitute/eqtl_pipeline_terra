@@ -11,3 +11,13 @@ workflows:
           - dev
         tags: 
           - /.*/
+
+   - name: "QTL-mapping"
+     subclass: WDL
+     primaryDescriptorPath: /workflows/pipeline_pt2.wdl
+     filters: 
+        branches: 
+          - main
+          - dev
+        tags: 
+          - /.*/
