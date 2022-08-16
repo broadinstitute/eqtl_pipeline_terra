@@ -1,6 +1,6 @@
 version 1.0
 task qc_plots {
-    input {
+  input {
     File counts
     File cell_donor_map
     String prefix
@@ -90,11 +90,11 @@ task qc_plots {
             help: 'String for output file prefix',
             example: 'ips_D0'
         }
-    docker_image: {
-            description: 'Docker image',
-            help: 'Docker image for preprocessing. Dependencies: Python 3',
-            example: 'us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
-        }
+    # docker_image: {
+    #         description: 'Docker image',
+    #         help: 'Docker image for preprocessing. Dependencies: Python 3',
+    #         example: 'us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
+    #     }
 
     # Outputs
     umi_cell_png: {
