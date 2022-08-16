@@ -1,7 +1,7 @@
 version 1.0
 
 # import other WDLs
-import "tasks/make_qc_plots.wdl" as qc
+import "tasks/qc_plots.wdl" as qc
 
 # This workflow takes pseudobulked data and maps eQTLs
 workflow village_qtls {
