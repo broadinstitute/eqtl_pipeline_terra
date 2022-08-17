@@ -113,6 +113,4 @@ task qc_plots {
             example: 'ips_D0.cells_per_donor.png'
         }
   }
-
-
 }
