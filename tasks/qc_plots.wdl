@@ -4,7 +4,7 @@ task qc_plots {
     File counts
     File cell_donor_map
     String prefix
-    # String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
 
     Int memory=32
     Int disk_space=32
@@ -60,7 +60,7 @@ task qc_plots {
   }
 
   runtime {
-    # docker: docker_image
+    docker: docker_image
     memory: "${memory}GB"
     disks: "local-disk ${disk_space} HDD"
     cpu: "${num_threads}"
@@ -90,11 +90,11 @@ task qc_plots {
             help: 'String for output file prefix',
             example: 'ips_D0'
         }
-    # docker_image: {
-    #         description: 'Docker image',
-    #         help: 'Docker image for preprocessing. Dependencies: Python 3',
-    #         example: 'us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
-    #     }
+    docker_image: {
+            description: 'Docker image',
+            help: 'Docker image for preprocessing. Dependencies: Python 3',
+            example: 'us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
+        }
 
     # Outputs
     umi_cell_png: {
