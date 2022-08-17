@@ -99,17 +99,17 @@ task qc_plots {
     # Outputs
     umi_cell_png: {
             description: '# UMIs / cell histogram',
-            help: '# UMIs / cell histogram',
+            help: 'PNG image of # UMIs / cell histogram',
             example: 'ips_D0.umis_per_cell.png'
         }
     gene_cell_png: {
             description: '# genes / cell histogram',
-            help: '# genes / cell histogram',
+            help: 'PNG image of # genes / cell histogram',
             example: 'ips_D0.genes_per_cell.png'
         }
     cell_donor_png: {
             description: '# cells / donor histogram',
-            help: '# cells / donor histogram',
+            help: 'PNG image of # cells / donor histogram',
             example: 'ips_D0.cells_per_donor.png'
         }
   }
