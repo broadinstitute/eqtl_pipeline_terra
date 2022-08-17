@@ -28,4 +28,24 @@ workflow village_qtls {
       gene_gtf=gene_gtf,
       prefix=prefix,
   }
+
+  # call normalize.normalize as normalize_counts {
+  #   input:
+  #     counts_filtered=filter_cells_donors.counts_filtered, 
+  #     prefix=prefix,
+  # }
+  
+  # call normalize.index_bed as index_bed_tpm {
+  #   input:
+  #     bed=normalize_counts.bed_tpm, 
+  # }
+
+  # call normalize.index_bed as index_bed_int {
+  #   input:
+  #     bed=normalize_counts.bed_int, 
+  # }
+
+
+
+
 }

@@ -15,7 +15,7 @@ task filter {
     # downscale-median-factor
     # ignore-chr
 
-    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v9'
 
     Int memory=32
     Int disk_space=32
@@ -27,7 +27,7 @@ task filter {
     set -euo pipefail
     pip install anndata==0.8
     python /filter.py --donors ${donor_list} --genes ${gene_list} --thresh-umis ${umis_per_cell_threshold} \
-    --thresh-cells ${cell_per_donor_threshold} ${counts} ${cell_donor_map} ${prefix} ${gene_gtf}
+      --thresh-cells ${cell_per_donor_threshold} ${counts} ${cell_donor_map} ${prefix} ${gene_gtf}
   }
 
   runtime {

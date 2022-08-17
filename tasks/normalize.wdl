@@ -68,7 +68,7 @@ task normalize {
 task index_bed {
   input {
     File bed
-    String bed_basename = basename(bed, ".bed")
+    String bed_basename=basename(bed, ".bed")
   }
 
   command {
