@@ -15,7 +15,7 @@ task filter {
     # downscale-median-factor
     # ignore-chr
 
-    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v9'
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
 
     Int memory=32
     Int disk_space=32

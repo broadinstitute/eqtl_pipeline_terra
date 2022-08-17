@@ -1,4 +1,4 @@
-anndata
+anndata==0.8
 pandas
 matplotlib
 gtfparse

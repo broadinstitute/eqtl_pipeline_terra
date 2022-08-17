@@ -1,6 +1,6 @@
 FROM python:latest
-COPY scripts/plot.py .
-COPY scripts/filter.py .
-COPY scripts/normalize.py .
-COPY requirements.txt .
+COPY src/python/plot.py .
+COPY src/python/filter.py .
+COPY src/python/normalize.py .
+COPY src/requirements.txt .
 RUN pip3 install -r requirements.txt
