@@ -43,7 +43,7 @@ if __name__ == '__main__':
     if args.downscale_median_factor > 0:
         # downscale high-UMI cells
         median_count = np.median(reads_all)
-        scale_factor = np.minimum(1, args.downscale_median_factor * median_count / reads_all)  # per cell scale factor
+        scale_factor = np.minimum(1, args.downscale_median_factor * median_count / (reads_all+1))  # per cell scale factor
         scale_factor = np.expand_dims(scale_factor, axis=1)
         counts = anndata.AnnData(counts.to_df() * scale_factor)
     else:

@@ -17,7 +17,7 @@ task filter {
 
     String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
 
-    Int memory=32
+    Int memory=64
     Int disk_space=32
     Int num_threads=4
     Int num_preempt=1
@@ -25,7 +25,6 @@ task filter {
 
   command {
     set -euo pipefail
-    pip install anndata==0.8
     python /filter.py --donors ${donor_list} --genes ${gene_list} --thresh-umis ${umis_per_cell_threshold} \
       --thresh-cells ${cell_per_donor_threshold} ${counts} ${cell_donor_map} ${prefix} ${gene_gtf}
   }
