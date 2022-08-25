@@ -5,6 +5,7 @@ import "tasks/qc_plots.wdl" as qc
 import "tasks/filter_cells_donors.wdl" as filter
 import "tasks/normalize_counts.wdl" as normalize
 import "tasks/run_peer.wdl" as run_peer
+import "tasks/run_tensorqtl_cis_permutations.wdl" as run_tensorqtl_cis_permutations
 
 # This workflow takes pseudobulked data and maps eQTLs
 workflow village_qtls {
@@ -13,8 +14,13 @@ workflow village_qtls {
     File cell_donor_map
     File gene_gtf
     String prefix
+
     Array[Int] peer_range
     Int n_all_peers
+
+    File plink_bed
+    File plink_bim
+    File plink_fam
   }
 
   call qc.qc_plots as qc_plots {
@@ -58,7 +64,7 @@ workflow village_qtls {
 
   # Subset for the PEERs to test 
   scatter (n_peer in peer_range) {
-    call run_peer.subset_peers_and_combine {
+    call run_peer.subset_peers_and_combine as subset_peers_and_combine {
       input:
         n_peer=n_peer,
         peer_covariates=all_peer_factors.peer_covariates, 
@@ -66,4 +72,15 @@ workflow village_qtls {
     }
   }
 
+  # Run tensorQTL cis permutations for each number of PEER correction
+  scatter(file in subset_peers_and_combine.combined_covariates) {
+    call run_tensorqtl_cis_permutations.tensorqtl_cis_permutations {
+      input: 
+        covariates=file, 
+        plink_bed=plink_bed, 
+        plink_bim=plink_bim, 
+        plink_fam=plink_fam, 
+        phenotype_bed=index_bed_int.bed_gz, 
+    }
+  }
 }
