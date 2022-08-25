@@ -21,3 +21,33 @@ workflows:
           - dev
         tags: 
           - /.*/
+
+   - name: "subwf-make-qc-plots"
+     subclass: WDL
+     primaryDescriptorPath: /workflows/subwf-make-qc-plots.wdl
+     filters: 
+        branches: 
+          - main
+          - dev
+        tags: 
+          - /.*/
+
+   - name: "subwf-filter-cells-donors"
+     subclass: WDL
+     primaryDescriptorPath: /workflows/subwf-filter-cells-donors.wdl
+     filters: 
+        branches: 
+          - main
+          - dev
+        tags: 
+          - /.*/
+
+   - name: "subwf-run-peer"
+     subclass: WDL
+     primaryDescriptorPath: /workflows/subwf-run-peer.wdl
+     filters: 
+        branches: 
+          - main
+          - dev
+        tags: 
+          - /.*/

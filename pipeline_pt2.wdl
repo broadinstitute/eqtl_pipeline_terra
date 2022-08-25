@@ -3,7 +3,7 @@ version 1.0
 # import other WDLs
 import "tasks/qc_plots.wdl" as qc
 import "tasks/filter_cells_donors.wdl" as filter
-import "tasks/normalize.wdl" as normalize
+import "tasks/normalize_counts.wdl" as normalize
 
 # This workflow takes pseudobulked data and maps eQTLs
 workflow village_qtls {
