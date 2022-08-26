@@ -32,7 +32,9 @@ task peer_selection {
 
     peer_range = []
     n_qtls = []
+    print('${sep=", " cis_eqtl_results}')
     for file in '${sep=", " cis_eqtl_results}':
+      print(file)
       # TODO assert that the file matches this naming format
 
       n_peer = int(file.removeprefix('${prefix}.').removesuffix('PEERs.cis_qtl.txt.gz'))
