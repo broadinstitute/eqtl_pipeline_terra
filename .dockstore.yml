@@ -51,3 +51,23 @@ workflows:
           - dev
         tags: 
           - /.*/
+
+   - name: "subwf-qtl-map-each-peer"
+     subclass: WDL
+     primaryDescriptorPath: /workflows/subwf-qtl-map-each-peer.wdl
+     filters: 
+        branches: 
+          - main
+          - dev
+        tags: 
+          - /.*/
+
+   - name: "subwf-qtl-map-nominal"
+     subclass: WDL
+     primaryDescriptorPath: /workflows/subwf-qtl-map-nominal.wdl
+     filters: 
+        branches: 
+          - main
+          - dev
+        tags: 
+          - /.*/

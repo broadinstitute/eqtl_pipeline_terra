@@ -17,12 +17,14 @@ workflow village_qtls {
 
     Array[Int] peer_range
     Int n_all_peers
+    Int n_chosen_peers=5
 
     File plink_bed
     File plink_bim
     File plink_fam
   }
 
+  # Make QC plots for UMIs/cell, genes/cell, cells/donor
   call qc.qc_plots as qc_plots {
     input:
       counts=counts, 
@@ -30,6 +32,7 @@ workflow village_qtls {
       prefix=prefix,
   }
 
+  # Filter donors, genes, cells (and downscale large cells) 
   call filter.filter as filter_cells_donors {
     input:
       counts=counts, 
@@ -38,12 +41,14 @@ workflow village_qtls {
       prefix=prefix,
   }
 
+  # Normalize (TPM and Inverse Normal Transform)
+  # TODO combine the indexing step
   call normalize.normalize as normalize_counts {
     input:
       counts_filtered=filter_cells_donors.counts_filtered, 
       prefix=prefix,
   }
-  
+
   call normalize.index_bed as index_bed_tpm {
     input:
       bed=normalize_counts.bed_tpm, 
@@ -83,4 +88,11 @@ workflow village_qtls {
         phenotype_bed=index_bed_int.bed_gz, 
     }
   }
+
+  # Plot eQTL discovery curve for the PEER range (option to manually choose # PEERs to correct with)
+
+  # Run tensorQTL cis nominal scan for significant cis-eQTLs
+
+  # Run tensorQTL SuSiE fine-mapping scan for significant cis-eQTLs
+  
 }

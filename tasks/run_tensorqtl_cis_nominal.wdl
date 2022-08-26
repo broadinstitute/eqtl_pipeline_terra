@@ -1,39 +1,25 @@
-# import other WDLs
-import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:copy_to_google_bucket_v2/versions/1/plain-WDL/descriptor" as copy2bucket
-
-workflow tensorqtl_cis_nominal_workflow {
-  String output_gs_dir
-  String dir_name = ""
-
-  call tensorqtl_cis_nominal
-
-  call copy2bucket.CopyFiles2Directory as copy_1 {
-    input: 
-    files_2_copy=tensorqtl_cis_nominal.chr_parquet,
-    output_gs_dir=output_gs_dir,
-    dir_name=dir_name,
-}
-
-}
-
+version 1.0
+# TODO add parameter_meta
 task tensorqtl_cis_nominal {
-  File plink_bed
-  File plink_bim
-  File plink_fam
+  input {
+    File plink_bed
+    File plink_bim
+    File plink_fam
 
-  File phenotype_bed
-  File covariates
-  String prefix
-  Float maf_threshold=0.05
+    File phenotype_bed
+    File covariates
+    String prefix
+    Float maf_threshold=0.05
 
-  File? interaction
-  File? phenotype_groups
+    File? interaction
+    File? phenotype_groups
 
-  Int memory=32
-  Int disk_space=32
-  Int num_threads=4
-  Int num_preempt=1
-
+    Int memory=32
+    Int disk_space=32
+    Int num_threads=4
+    Int num_preempt=1
+  }
+  
   command {
     set -euo pipefail
     plink_base=$(echo "${plink_bed}" | rev | cut -f 2- -d '.' | rev)

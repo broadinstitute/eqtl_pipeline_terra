@@ -22,35 +22,35 @@ task tensorqtl_cis_permutations {
   }
   
   command {
-      plink_base=$(echo "${plink_bed}" | rev | cut -f 2- -d '.' | rev)
-      python3 -m tensorqtl \
-          $plink_base ${phenotype_bed} ${prefix} \
-          --mode cis \
-          --covariates ${covariates} \
-          ${"--phenotype_groups " + phenotype_groups} \
-          ${"--fdr " + fdr} \
-          ${"--qvalue_lambda " + qvalue_lambda}
-          ${"--maf_threshold " + maf_thresh}
+    plink_base=$(echo "${plink_bed}" | rev | cut -f 2- -d '.' | rev)
+    python3 -m tensorqtl \
+      $plink_base ${phenotype_bed} ${prefix} \
+      --mode cis \
+      --covariates ${covariates} \
+      ${"--phenotype_groups " + phenotype_groups} \
+      ${"--fdr " + fdr} \
+      ${"--qvalue_lambda " + qvalue_lambda}
+      ${"--maf_threshold " + maf_thresh}
   }
 
   output {
-      File cis_qtl="${prefix}.cis_qtl.txt.gz"
-      File log="${prefix}.tensorQTL.cis.log"
+    File cis_qtl="${prefix}.cis_qtl.txt.gz"
+    File log="${prefix}.tensorQTL.cis.log"
   }
 
   runtime {
-      docker: "gcr.io/broad-cga-francois-gtex/tensorqtl:latest"
-      memory: "${memory}GB"
-      disks: "local-disk ${disk_space} HDD"
-      bootDiskSizeGb: 25
-      cpu: "${num_threads}"
-      preemptible: "${num_preempt}"
-      gpuType: "nvidia-tesla-p100"
-      gpuCount: 1
-      zones: ["us-central1-c"]
+    docker: "gcr.io/broad-cga-francois-gtex/tensorqtl:latest"
+    memory: "${memory}GB"
+    disks: "local-disk ${disk_space} HDD"
+    bootDiskSizeGb: 25
+    cpu: "${num_threads}"
+    preemptible: "${num_preempt}"
+    gpuType: "nvidia-tesla-p100"
+    gpuCount: 1
+    zones: ["us-central1-c"]
   }
   
   meta {
-      author: "Francois Aguet"
+    author: "Francois Aguet"
   }
 }
