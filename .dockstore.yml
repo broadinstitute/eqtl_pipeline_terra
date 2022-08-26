@@ -71,3 +71,13 @@ workflows:
           - dev
         tags: 
           - /.*/
+
+   - name: "test-peer-selection"
+     subclass: WDL
+     primaryDescriptorPath: /tasks/peer_selection.wdl
+     filters: 
+        branches: 
+          - main
+          - dev
+        tags: 
+          - /.*/
