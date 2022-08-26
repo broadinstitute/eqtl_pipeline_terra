@@ -33,7 +33,9 @@ task peer_selection {
     peer_range = []
     n_qtls = []
     print('${sep=", " cis_eqtl_results}')
-    for file in '${sep=", " cis_eqtl_results}':
+    cis_eqtl_results = '${sep="," cis_eqtl_results}'
+    file_array = cis_eqtl_results.split(',')
+    for file in file_array:
       print(file)
       # TODO assert that the file matches this naming format
 
