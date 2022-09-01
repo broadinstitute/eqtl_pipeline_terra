@@ -33,7 +33,7 @@ if __name__ == '__main__':
     # write out the cell to village group mapping
     cell_to_group_out = cell_to_donor_out.set_axis(['cell', 'group_name'], axis=1)
     cell_to_group_out['group_name'] = args.group_name
-    cell_to_group_out.to_csv(f'{args.sample_id}_to_{args.group_name}_cell_to_group.txt', sep='\t', index=False)
+    cell_to_group_out.to_csv(f'{args.sample_id}_cell_to_group.txt', sep='\t', index=False)
 
     # update CBC in counts matrix with suffix
     counts.obs.index += f'-{args.sample_id}'

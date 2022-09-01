@@ -22,7 +22,7 @@ task cbc_modify {
 
   output {
     File cell_donor_map='${sample_id}_cell_to_donor.txt'
-    File cell_group_map='${sample_id}_to_${group_name}_cell_to_group.txt'
+    File cell_group_map='${sample_id}_cell_to_group.txt'
     File h5ad_renamed='${sample_id}_singlets_cbc_suffix.h5ad'
   }
 }
