@@ -12,6 +12,11 @@ task cbc_modify {
     String group_name # ex. ips_D0
     File h5ad_filtered # ex. ips_D0_CIRM12_2_out_singlets_only.h5ad 
     File cell_donor_assignments # ex. ips_D0_CIRM12_2_donor_assignments.txt
+
+    Int memory=64
+    Int disk_space=32
+    Int num_threads=4
+    Int num_preempt=1
   }
   command {
     set -euo pipefail
@@ -45,6 +50,14 @@ task cbc_modify {
     counts.obs.index += '-${sample_id}'
     counts.write('${sample_id}_singlets_cbc_suffix.h5ad')
   }
+
+  runtime {
+    memory: "${memory}GB"
+    disks: "local-disk ${disk_space} HDD"
+    cpu: "${num_threads}"
+    preemptible: "${num_preempt}"
+  }
+
   output {
     File cell_donor_map='${sample_id}_cell_to_donor.txt'
     File cell_group_map='${sample_id}_to_{group_name}_cell_to_group.txt'
