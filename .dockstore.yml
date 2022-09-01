@@ -81,3 +81,13 @@ workflows:
           - dev
         tags: 
           - /.*/
+
+   - name: "test-cbc-modify"
+     subclass: WDL
+     primaryDescriptorPath: /tasks/cbc_modify.wdl
+     filters: 
+        branches: 
+          - main
+          - dev
+        tags: 
+          - /.*/
