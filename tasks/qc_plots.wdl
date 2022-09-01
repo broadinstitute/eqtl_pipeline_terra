@@ -1,10 +1,11 @@
 version 1.0
+# TODO change this back to calling the python script
 task qc_plots {
   input {
     File counts
     File cell_donor_map
     String prefix
-    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
 
     Int memory=32
     Int disk_space=32
