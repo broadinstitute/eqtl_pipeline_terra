@@ -6,6 +6,7 @@ import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:DropulationAssignCell
 import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:DropulationDetectDoublets_maxerr/versions/2/plain-WDL/descriptor" as detectdoublets
 import "tasks/remove_doublets.wdl" as removedoublets
 import "tasks/run_cellbender.wdl" as cellbender
+import "tasks/cbc_modify.wdl" as cbc_modify
 
 
 # This workflow takes cellranger data to grouped pseudobulk
@@ -15,6 +16,8 @@ workflow scEQTL_pseudobulk {
     String sample_id
     # String scratch_dir # TODO
 
+    # village name (ips_D0)
+    String group_name
     # cellranger inputs - multiple 10x runs per sample
     String cellranger_directory
 
@@ -117,5 +120,11 @@ workflow scEQTL_pseudobulk {
   }
 
   # modify CBC
-  
+  call cbc_modify.cbc_modify as run_cbc_modify {
+    input:
+    sample_id=sample_id, 
+    group_name=group_name, 
+    h5ad_filtered=singlet_filter.h5ad_filtered, 
+    cell_donor_assignments=donorassignment.assignments, 
+  }
 }

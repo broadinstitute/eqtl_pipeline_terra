@@ -2,9 +2,6 @@ version 1.0
 # add suffix to the cell barcodes so they are unique before pseudobulking
 # output 
 # TODO add parameter meta
-workflow run_cbc_modify {
-  call cbc_modify
-}
 
 task cbc_modify {
   input {
