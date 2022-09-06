@@ -9,6 +9,11 @@ task pseudobulk {
     Array[File] h5ad # ex. '${sample_id}_singlets_cbc_suffix.h5ad'
     
     String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
+
+    Int memory=32
+    Int disk_space=32
+    Int num_threads=4
+    Int num_preempt=1
   }
 
   command {
@@ -21,6 +26,10 @@ task pseudobulk {
 
   runtime {
     docker: docker_image
+    memory: "${memory}GB"
+    disks: "local-disk ${disk_space} HDD"
+    cpu: "${num_threads}"
+    preemptible: "${num_preempt}"
   }
 
   output {
