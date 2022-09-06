@@ -1,6 +1,7 @@
 version 1.0
 
 # import other WDLs
+import "tasks/pseudobulk.wdl" as pseudobulk
 import "tasks/qc_plots.wdl" as qc
 import "tasks/filter_cells_donors.wdl" as filter
 import "tasks/normalize_counts.wdl" as normalize
@@ -10,8 +11,16 @@ import "tasks/run_tensorqtl_cis_permutations.wdl" as run_tensorqtl_cis_permutati
 # This workflow takes pseudobulked data and maps eQTLs
 workflow village_qtls {
   input {
-    File counts
-    File cell_donor_map
+    # File counts
+    # File cell_donor_map
+
+    String group_name # ex. ips_D0
+    Array[String] sample_ids # ex. ips_D0
+    Array[File] cell_donor_map # ex. '${sample_id}_cell_to_donor.txt'
+    Array[File] cell_group_map # ex. ${sample_id}_cell_to_group.txt'
+    Array[File] h5ad # ex. '${sample_id}_singlets_cbc_suffix.h5ad'
+
+
     File gene_gtf
     String prefix
 
@@ -24,19 +33,29 @@ workflow village_qtls {
     File plink_fam
   }
 
+  # Pseudobulk the group
+  call pseudobulk.pseudobulk as run_pseudobulk {
+    input:
+      group_name=group_name,
+      sample_ids=sample_ids,
+      cell_donor_map=cell_donor_map,
+      cell_group_map=cell_group_map,
+      h5ad=h5ad,
+  }
+
   # Make QC plots for UMIs/cell, genes/cell, cells/donor
   call qc.qc_plots as qc_plots {
     input:
-      counts=counts, 
-      cell_donor_map=cell_donor_map,
+      counts=run_pseudobulk.counts, 
+      cell_donor_map=run_pseudobulk.cell_donor_map_group,
       prefix=prefix,
   }
 
   # Filter donors, genes, cells (and downscale large cells) 
   call filter.filter as filter_cells_donors {
     input:
-      counts=counts, 
-      cell_donor_map=cell_donor_map,
+      counts=run_pseudobulk.counts, 
+      cell_donor_map=run_pseudobulk.cell_donor_map_group,
       gene_gtf=gene_gtf,
       prefix=prefix,
   }
