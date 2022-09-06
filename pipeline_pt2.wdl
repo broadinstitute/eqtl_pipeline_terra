@@ -20,9 +20,8 @@ workflow village_qtls {
     Array[File] cell_group_map # ex. ${sample_id}_cell_to_group.txt'
     Array[File] h5ad # ex. '${sample_id}_singlets_cbc_suffix.h5ad'
 
-
     File gene_gtf
-    String prefix
+    # String prefix
 
     Array[Int] peer_range
     Int n_all_peers
@@ -48,7 +47,7 @@ workflow village_qtls {
     input:
       counts=run_pseudobulk.counts, 
       cell_donor_map=run_pseudobulk.cell_donor_map_group,
-      prefix=prefix,
+      prefix=group_name,
   }
 
   # Filter donors, genes, cells (and downscale large cells) 
@@ -57,7 +56,7 @@ workflow village_qtls {
       counts=run_pseudobulk.counts, 
       cell_donor_map=run_pseudobulk.cell_donor_map_group,
       gene_gtf=gene_gtf,
-      prefix=prefix,
+      prefix=group_name,
   }
 
   # Normalize (TPM and Inverse Normal Transform)
@@ -65,7 +64,7 @@ workflow village_qtls {
   call normalize.normalize as normalize_counts {
     input:
       counts_filtered=filter_cells_donors.counts_filtered, 
-      prefix=prefix,
+      prefix=group_name,
   }
 
   call normalize.index_bed as index_bed_tpm {
@@ -83,7 +82,7 @@ workflow village_qtls {
     input:
       expression_file=index_bed_int.bed_gz,
       n_all_peers=n_all_peers, 
-      prefix=prefix,
+      prefix=group_name,
   }
 
   # Subset for the PEERs to test 
@@ -92,7 +91,7 @@ workflow village_qtls {
       input:
         n_peer=n_peer,
         peer_covariates=all_peer_factors.peer_covariates, 
-        prefix=prefix,
+        prefix=group_name,
     }
   }
 

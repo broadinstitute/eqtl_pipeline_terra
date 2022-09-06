@@ -13,6 +13,9 @@ task pseudobulk {
 
   command {
     set -euo pipefail
+    cp ${sep=' ' cell_donor_map} .
+    cp ${sep=' ' cell_group_map} .
+    cp ${sep=' ' h5ad} .
     python /pseudobulk.py ${group_name} ${sep=' ' sample_ids}
   }
 
