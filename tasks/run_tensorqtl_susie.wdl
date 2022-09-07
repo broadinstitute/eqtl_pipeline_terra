@@ -28,7 +28,7 @@ task tensorqtl_cis_susie {
       $plink_base ${phenotype_bed} ${prefix} \
       --mode cis_susie \
       --covariates ${covariates} \
-      --cis_output ${cis_output}
+      --cis_output ${cis_output} \
       ${"--maf_threshold " + maf_threshold} \
       ${"--interaction " + interaction} \
       ${"--phenotype_groups " + phenotype_groups}
