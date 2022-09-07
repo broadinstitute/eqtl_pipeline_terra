@@ -8,12 +8,12 @@ import "tasks/normalize_counts.wdl" as normalize
 import "tasks/run_peer.wdl" as run_peer
 import "tasks/run_tensorqtl_cis_permutations.wdl" as run_tensorqtl_cis_permutations
 import "tasks/peer_selection.wdl" as peer_selection
+import "tasks/run_tensorqtl_cis_nominal.wdl" as run_tensorqtl_cis_nominal
+import "tasks/run_tensorqtl_susie.wdl" as run_tensorqtl_susie
 
 # This workflow takes pseudobulked data and maps eQTLs
 workflow village_qtls {
   input {
-    # File counts
-    # File cell_donor_map
 
     String group_name # ex. ips_D0
     Array[String] sample_ids # ex. ips_D0
@@ -22,7 +22,6 @@ workflow village_qtls {
     Array[File] h5ad # ex. '${sample_id}_singlets_cbc_suffix.h5ad'
 
     File gene_gtf
-    # String prefix
 
     Array[Int] peer_range
     Int n_all_peers
@@ -112,12 +111,32 @@ workflow village_qtls {
   call peer_selection.peer_selection as run_peer_selection {
     input:
       cis_eqtl_results=cis_permutations.cis_qtl,
+      covariates=subset_peers_and_combine.combined_covariates,
       n_chosen_peers=n_chosen_peers,
       prefix=group_name,
   }
-  
+
   # Run tensorQTL cis nominal scan for significant cis-eQTLs
+  call run_tensorqtl_cis_nominal.tensorqtl_cis_nominal as cis_nominal {
+    input: 
+      plink_bed=plink_bed, 
+      plink_bim=plink_bim, 
+      plink_fam=plink_fam, 
+      phenotype_bed=index_bed_int.bed_gz, 
+      covariates=run_peer_selection.chosen_peer_covariates, 
+      prefix=group_name,
+  }
 
   # Run tensorQTL SuSiE fine-mapping scan for significant cis-eQTLs
-  
+  call run_tensorqtl_susie.tensorqtl_cis_susie as cis_susie {
+    input: 
+      plink_bed=plink_bed, 
+      plink_bim=plink_bim, 
+      plink_fam=plink_fam, 
+      phenotype_bed=index_bed_int.bed_gz, 
+      covariates=run_peer_selection.chosen_peer_covariates, 
+      prefix=group_name,
+      cis_output=run_peer_selection.chosen_peer_qtls,
+  }
+
 }

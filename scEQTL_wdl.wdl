@@ -14,7 +14,6 @@ workflow scEQTL_pseudobulk {
   input {
     # sample name - will produce one cellxgene count per sample
     String sample_id
-    # String scratch_dir # TODO
 
     # village name (ips_D0)
     String group_name
@@ -29,28 +28,12 @@ workflow scEQTL_pseudobulk {
     File VCF_TBI
     # gene annotation file
     File GTF
-
-    # Donor information
     
     # which donors from VCF to include
     File donors_to_include
 
-    # Cell to group/cluster map
-
-    # 10x-sample+CBC as index, mapping to subgroup or cluster
-    # File cell_to_group # TODO
-
-    # Explicit covariates to add to pseudobulk groups
-
-    # per-donor covariates - tab separated pandas, VCF ID as index
-    # File donor_covariates # TODO
-    # per-10x-channel covariates - tsv, 10x-sample ID as index
-    # File sample_covariates # TODO
-
     # Thresholds
-    Float min_maf = 0.05  # for donors, PCA, tensorqtl
     Float singlet_threshold = 0.79  # in doublet assignment
-    Int minimum_umis_per_cell = 2000
 
     # Cellbender arguments
     Int cellbender_total_droplets

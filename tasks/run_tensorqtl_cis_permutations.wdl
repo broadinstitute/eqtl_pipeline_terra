@@ -18,7 +18,7 @@ task tensorqtl_cis_permutations {
     Int memory=32
     Int disk_space=32
     Int num_threads=4
-    Int num_preempt=1
+    Int num_preempt=0
   }
   
   command {

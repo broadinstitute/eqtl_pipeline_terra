@@ -1,5 +1,6 @@
 version 1.0
 # given a group_name, go through given files and extract/pseudobulk anything corresponding to that village
+# TODO fix this to not use cp
 task pseudobulk {
   input {
     String group_name # ex. ips_D0
@@ -18,10 +19,11 @@ task pseudobulk {
 
   command {
     set -euo pipefail
-    cp ${sep=' ' cell_donor_map} .
-    cp ${sep=' ' cell_group_map} .
-    cp ${sep=' ' h5ad} .
-    python /pseudobulk.py ${group_name} ${sep=' ' sample_ids}
+    python /pseudobulk.py ${group_name} \
+              -s ${sep=' ' sample_ids} \
+              -d ${sep=' ' cell_donor_map} \
+              -g ${sep=' ' cell_group_map} \
+              -h ${sep=' ' h5ad} 
   }
 
   runtime {

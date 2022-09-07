@@ -1,5 +1,5 @@
 FROM python:latest
-COPY src/python/plot.py .
+COPY src/python/qc_plots.py .
 COPY src/python/filter.py .
 COPY src/python/normalize.py .
 COPY src/python/cbc_modify.py .

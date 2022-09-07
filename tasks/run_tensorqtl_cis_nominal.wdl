@@ -17,7 +17,7 @@ task tensorqtl_cis_nominal {
     Int memory=32
     Int disk_space=32
     Int num_threads=4
-    Int num_preempt=1
+    Int num_preempt=0
   }
   
   command {
@@ -30,7 +30,6 @@ task tensorqtl_cis_nominal {
       ${"--maf_threshold " + maf_threshold} \
       ${"--interaction " + interaction} \
       ${"--phenotype_groups " + phenotype_groups}
-        
   }
 
   runtime {

@@ -8,8 +8,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(dest="group_name", type=str,
                         help="group/village name")
-    parser.add_argument(dest="sample_ids", nargs='+', default=[], 
+    parser.add_argument("-s", "--sample_ids", dest="sample_ids", nargs='+', default=[], required=True,
                         help="samples to look in for cells belonging to the group/village")
+    parser.add_argument("-d", "--cell_donor_maps", dest="cell_donor_maps", nargs='+', default=[], required=True,
+                        help="cell donor maps to look in for cells belonging to the group/village")
+    parser.add_argument("-g", "--cell_group_maps", dest="cell_group_maps", nargs='+', default=[], required=True,
+                        help="cell group maps to look in for cells belonging to the group/village")
+    parser.add_argument("-h", "--h5ads", dest="h5ads", nargs='+', default=[], required=True,
+                        help="count matrices (h5ads) to look in for cells belonging to the group/village")
     args = parser.parse_args()
 
     c_d_map_list = []
@@ -17,22 +23,25 @@ if __name__ == '__main__':
 
     for sample_id in args.sample_ids:                                        
 
-        # read in cell to group assignment
-        cell_group_df = pd.read_csv(f'{sample_id}_cell_to_group.txt', sep='\t')
+        # read in cell to group assignment 
+        filename = [s for s in args.cell_group_maps if sample_id in s][0]
+        cell_group_df = pd.read_csv(filename, sep='\t')
         cell_group_df.columns = ['CBC', 'group_name']
         
         # get the cells that are assigned to this group_name / village
         cell_group_df = cell_group_df.query('group_name==@args.group_name')
         
         # get the cell to donor_map 
-        cell_donor_df = pd.read_csv(f'{sample_id}_cell_to_donor.txt', sep='\t')
+        filename = [s for s in args.cell_donor_maps if sample_id in s][0]
+        cell_donor_df = pd.read_csv(filename, sep='\t')
         cell_donor_df.columns = ['cell', 'bestSample']
 
         # get the cells that are assigned to this group_name / village
         cell_donor_df = cell_donor_df.query('cell.isin(@cell_group_df.CBC)')
         
-        # load counts
-        counts = anndata.read_h5ad(f'{sample_id}_singlets_cbc_suffix.h5ad')
+        # load counts 
+        filename = [s for s in args.h5ads if sample_id in s][0]
+        counts = anndata.read_h5ad(filename)
 
         # get the cells that are assigned to this group_name / village
         obs = counts.obs[counts.obs.index.isin(cell_group_df['CBC'])] # obs = cells

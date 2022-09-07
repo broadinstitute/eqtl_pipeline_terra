@@ -1,39 +1,25 @@
-# import other WDLs
-import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:copy_to_google_bucket_v2/versions/1/plain-WDL/descriptor" as copy2bucket
+version 1.0
 
-workflow tensorqtl_cis_nominal_workflow {
-  String output_gs_dir
-  String dir_name = ""
+task tensorqtl_cis_susie {
+  input {
+    File plink_bed
+    File plink_bim
+    File plink_fam
 
-  call tensorqtl_cis_nominal
+    File phenotype_bed
+    File covariates
+    String prefix
+    File cis_output # parquet cis-eqtl output
+    Float maf_threshold=0.05
 
-  call copy2bucket.CopyFiles2Directory as copy_1 {
-    input: 
-    files_2_copy=tensorqtl_cis_nominal.chr_parquet,
-    output_gs_dir=output_gs_dir,
-    dir_name=dir_name,
-}
+    File? interaction
+    File? phenotype_groups
 
-}
-
-task tensorqtl_cis_nominal {
-  File plink_bed
-  File plink_bim
-  File plink_fam
-
-  File phenotype_bed
-  File covariates
-  String prefix
-  File cis_output # parquet cis-eqtl output
-  Float maf_threshold=0.05
-
-  File? interaction
-  File? phenotype_groups
-
-  Int memory=32
-  Int disk_space=32
-  Int num_threads=4
-  Int num_preempt=1
+    Int memory=32
+    Int disk_space=32
+    Int num_threads=4
+    Int num_preempt=0
+  }
 
   command {
     set -euo pipefail
@@ -46,7 +32,6 @@ task tensorqtl_cis_nominal {
       ${"--maf_threshold " + maf_threshold} \
       ${"--interaction " + interaction} \
       ${"--phenotype_groups " + phenotype_groups}
-        
   }
 
   runtime {

@@ -15,49 +15,7 @@ task qc_plots {
 
   command {
     set -euo pipefail
-    pip install anndata==0.8
-
-    python <<CODE
-    import pandas as pd
-    import anndata
-    import matplotlib.pyplot as plt
-
-    # load counts
-    counts = anndata.read_h5ad('${counts}')
-
-    # plot umis per cell
-    reads_all = counts.X.sum(axis=1).A.ravel()
-    fig,ax = plt.subplots(facecolor='w')
-    ax.hist(reads_all, bins=100)
-    ax.set_xlabel('# UMIs / cell')
-    ax.set_ylabel('# cells')
-    fig.patch.set_facecolor('w')
-    plt.savefig('${prefix}.umis_per_cell.png', dpi=300)
-
-    # load cell to donor map
-    cell_to_donor = pd.read_table('${cell_donor_map}')
-    cell_to_donor.columns = "cell donor".split()
-
-    # filter to cells that exist (cells in the count matrix)
-    cell_to_donor = cell_to_donor[cell_to_donor.cell.isin(counts.obs_names)]
-
-    # plot genes per cell
-    fig,ax = plt.subplots(facecolor='w')
-    ax.hist((counts.X != 0).sum(axis=1).A.ravel(), bins=100)
-    ax.set_xlabel('# genes / cell')
-    ax.set_ylabel('# cells')
-    fig.patch.set_facecolor('w')
-    plt.savefig('${prefix}.genes_per_cell.png', dpi=300)
-
-    # plot cells per donor
-    fig,ax = plt.subplots(facecolor='w')
-    ax.hist(cell_to_donor['donor'].value_counts().values, bins=30)
-    ax.set_xlabel('# cells / donor')
-    ax.set_ylabel('# donors')
-    fig.patch.set_facecolor('w')
-    plt.savefig('${prefix}.cells_per_donor.png', dpi=300)
-
-    CODE
+    python /qc_plots.py ${counts} ${cell_donor_map} ${prefix}
   }
 
   runtime {
