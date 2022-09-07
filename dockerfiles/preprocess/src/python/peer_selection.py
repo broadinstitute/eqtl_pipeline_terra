@@ -11,8 +11,8 @@ if __name__ == '__main__':
                         help="prefix for png, ex. group/village name")
     parser.add_argument(dest="n_chosen_peers", type=int,
                         help="chosen number of peers to make a cis-eqtl parquet file for")
-    parser.add_argument(dest="maf_thresh", type=float, default=0.05,
-                        help="the maf threshold to call significant eqtls")
+    parser.add_argument(dest="fdr", type=float, default=0.05,
+                        help="the false discovery rate threshold to call significant eqtls")
     parser.add_argument("-r", dest="cis_eqtl_results", nargs='+', default=[], 
                         help="Array of files of cis-eQTL results")
     parser.add_argument("-c", dest="covariates", nargs='+', default=[], 

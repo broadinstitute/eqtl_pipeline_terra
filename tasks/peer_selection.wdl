@@ -7,14 +7,14 @@ task peer_selection {
     Int n_chosen_peers=5
     String prefix
 
-    Float maf_thresh=0.05
+    Float fdr=0.05
 
     String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
   }
 
   command {
     set -euo pipefail
-    python /peer_selection.py ${prefix} ${n_chosen_peers} ${maf_thresh} \
+    python /peer_selection.py ${prefix} ${n_chosen_peers} ${fdr} \
                     -r ${sep=' ' cis_eqtl_results} \
                     -c ${sep=' ' covariates} \
   }
