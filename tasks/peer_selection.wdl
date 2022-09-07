@@ -6,6 +6,8 @@ task peer_selection {
     Array[File] cis_eqtl_results
     Int n_chosen_peers=5
     String prefix
+
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
   }
 
   command {
@@ -13,6 +15,10 @@ task peer_selection {
     python /peer_selection.py ${prefix} ${sep=' ' cis_eqtl_results}
   }
 
+  runtime {
+    docker: docker_image
+  }
+  
   output {
     File peer_png="${prefix}.PEER_selection.png"
     File chosen_peer_txt="/**/${prefix}.${n_chosen_peers}PEERs.cis_qtl.txt.gz"
