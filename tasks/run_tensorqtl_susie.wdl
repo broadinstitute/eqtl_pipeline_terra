@@ -29,7 +29,7 @@ task tensorqtl_cis_susie {
       --mode cis_susie \
       --covariates ${covariates} \
       --cis_output ${cis_output} \
-      ${"--maf_threshold " + maf_threshold} \
+      --maf_threshold ${maf_threshold} \
       ${"--interaction " + interaction} \
       ${"--phenotype_groups " + phenotype_groups}
   }

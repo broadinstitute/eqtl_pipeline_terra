@@ -35,7 +35,7 @@ if __name__ == '__main__':
       # for the chosen number of peers, 
       if n_peer == args.n_chosen_peers:
         # call significant eQTLs
-        df = df.query('qval<=@args.maf_thresh')
+        df = df.query('qval<=@args.fdr')
 
         # save the chosen qtl result file as parquet for fine-mapping step
         df.to_parquet(f'{args.prefix}.{n_peer}PEERs.cis_qtl.sigificant.parquet')
