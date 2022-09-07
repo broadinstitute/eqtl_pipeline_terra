@@ -110,4 +110,11 @@ workflow scEQTL_pseudobulk {
     h5ad_filtered=singlet_filter.h5ad_filtered, 
     cell_donor_assignments=donorassignment.assignments, 
   }
+
+  output {
+    File cell_donor_map=run_cbc_modify.cell_donor_map
+    File cell_group_map=run_cbc_modify.cell_group_map
+    File h5ad=run_cbc_modify.h5ad_renamed
+  }
+
 }

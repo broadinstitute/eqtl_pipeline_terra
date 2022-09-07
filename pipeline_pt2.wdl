@@ -139,4 +139,22 @@ workflow village_qtls {
       cis_output=run_peer_selection.chosen_peer_qtls,
   }
 
+  output {
+    # plots
+    File umi_cell_png=qc_plots.umi_cell_png
+    File gene_cell_png=qc_plots.gene_cell_png
+    File cell_donor_png=qc_plots.cell_donor_png
+    File peer_png=run_peer_selection.peer_png
+
+    # count matrices and covariates
+    File counts_tpm=normalize_counts.parquet_tpm
+    File counts_int=normalize_counts.parquet_int
+    File final_covariates=run_peer_selection.chosen_peer_covariates
+
+    # qtl results
+    File qtl_perm=run_peer_selection.chosen_peer_qtls
+    Array[File] qtl_nominal=cis_nominal.chr_parquet
+    File qtl_finemap=cis_susie.parquet
+  }
+
 }

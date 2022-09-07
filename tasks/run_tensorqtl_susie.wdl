@@ -46,7 +46,7 @@ task tensorqtl_cis_susie {
   }
 
   output {
-    Array[File] chr_parquet=glob("${prefix}*.parquet")
+    File parquet="${prefix}*.parquet"
     File log=glob("${prefix}*.log")[0]
   }
 
