@@ -7,6 +7,7 @@ import "tasks/filter_cells_donors.wdl" as filter
 import "tasks/normalize_counts.wdl" as normalize
 import "tasks/run_peer.wdl" as run_peer
 import "tasks/run_tensorqtl_cis_permutations.wdl" as run_tensorqtl_cis_permutations
+import "tasks/peer_selection.wdl" as peer_selection
 
 # This workflow takes pseudobulked data and maps eQTLs
 workflow village_qtls {
@@ -97,7 +98,7 @@ workflow village_qtls {
 
   # Run tensorQTL cis permutations for each number of PEER correction
   scatter(file in subset_peers_and_combine.combined_covariates) {
-    call run_tensorqtl_cis_permutations.tensorqtl_cis_permutations {
+    call run_tensorqtl_cis_permutations.tensorqtl_cis_permutations as cis_permutations {
       input: 
         covariates=file, 
         plink_bed=plink_bed, 
@@ -108,7 +109,13 @@ workflow village_qtls {
   }
 
   # Plot eQTL discovery curve for the PEER range (option to manually choose # PEERs to correct with)
-
+  call peer_selection.peer_selection as run_peer_selection {
+    input:
+      cis_eqtl_results=cis_permutations.cis_qtl,
+      n_chosen_peers=n_chosen_peers,
+      prefix=group_name,
+  }
+  
   # Run tensorQTL cis nominal scan for significant cis-eQTLs
 
   # Run tensorQTL SuSiE fine-mapping scan for significant cis-eQTLs
