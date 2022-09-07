@@ -29,7 +29,7 @@ task tensorqtl_cis_permutations {
       --covariates ${covariates} \
       ${"--phenotype_groups " + phenotype_groups} \
       ${"--fdr " + fdr} \
-      ${"--qvalue_lambda " + qvalue_lambda}
+      ${"--qvalue_lambda " + qvalue_lambda} \
       ${"--maf_threshold " + maf_thresh}
   }
 
