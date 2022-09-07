@@ -4,7 +4,7 @@ task normalize {
     File counts_filtered
     String prefix
 
-    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess@sha256:521ebbf10e40117118e612417fee754ab2f7bcc3ca9a3c060d5874de09d57615'
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
   }
 
   command {
