@@ -23,7 +23,7 @@ task pseudobulk {
               -s ${sep=' ' sample_ids} \
               -d ${sep=' ' cell_donor_map} \
               -g ${sep=' ' cell_group_map} \
-              -h ${sep=' ' h5ad} 
+              -c ${sep=' ' h5ad} 
   }
 
   runtime {

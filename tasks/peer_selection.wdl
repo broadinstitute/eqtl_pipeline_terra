@@ -1,7 +1,5 @@
 version 1.0
 # TODO add parameter meta
-# TODO add covariate file selection
-# TODO make it output a cis-eqtl parquet file for fine-mapping step
 task peer_selection {
   input {
     Array[File] cis_eqtl_results
@@ -17,7 +15,6 @@ task peer_selection {
     python /peer_selection.py ${prefix} ${n_chosen_peers} \
                     -r ${sep=' ' cis_eqtl_results} \
                     -c ${sep=' ' covariates} \
-                    
   }
 
   runtime {

@@ -24,7 +24,7 @@ workflow village_qtls {
     File gene_gtf
 
     Array[Int] peer_range
-    Int n_all_peers
+    Int n_all_peers # TODO make n_all_peers max(peer_range)
     Int n_chosen_peers=5
 
     File plink_bed

@@ -14,7 +14,7 @@ if __name__ == '__main__':
                         help="cell donor maps to look in for cells belonging to the group/village")
     parser.add_argument("-g", "--cell_group_maps", dest="cell_group_maps", nargs='+', default=[], required=True,
                         help="cell group maps to look in for cells belonging to the group/village")
-    parser.add_argument("-h", "--h5ads", dest="h5ads", nargs='+', default=[], required=True,
+    parser.add_argument("-c", "--counts", dest="h5ads", nargs='+', default=[], required=True,
                         help="count matrices (h5ads) to look in for cells belonging to the group/village")
     args = parser.parse_args()
 
