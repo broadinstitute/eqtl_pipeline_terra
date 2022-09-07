@@ -7,12 +7,14 @@ task peer_selection {
     Int n_chosen_peers=5
     String prefix
 
+    Float maf_thresh=0.05
+
     String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
   }
 
   command {
     set -euo pipefail
-    python /peer_selection.py ${prefix} ${n_chosen_peers} \
+    python /peer_selection.py ${prefix} ${n_chosen_peers} ${maf_thresh} \
                     -r ${sep=' ' cis_eqtl_results} \
                     -c ${sep=' ' covariates} \
   }
@@ -23,7 +25,7 @@ task peer_selection {
 
   output {
     File peer_png="${prefix}.PEER_selection.png"
-    File chosen_peer_qtls="${prefix}.${n_chosen_peers}PEERs.cis_qtl.parquet"
+    File chosen_peer_qtls="${prefix}.${n_chosen_peers}PEERs.cis_qtl.sigificant.parquet"
     File chosen_peer_covariates="${prefix}.${n_chosen_peers}PEERs.combined_covariates.txt"
   }
 

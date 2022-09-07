@@ -11,6 +11,8 @@ if __name__ == '__main__':
                         help="prefix for png, ex. group/village name")
     parser.add_argument(dest="n_chosen_peers", type=int,
                         help="chosen number of peers to make a cis-eqtl parquet file for")
+    parser.add_argument(dest="maf_thresh", type=float, default=0.05,
+                        help="the maf threshold to call significant eqtls")
     parser.add_argument("-r", dest="cis_eqtl_results", nargs='+', default=[], 
                         help="Array of files of cis-eQTL results")
     parser.add_argument("-c", dest="covariates", nargs='+', default=[], 
@@ -32,8 +34,11 @@ if __name__ == '__main__':
 
       # for the chosen number of peers, 
       if n_peer == args.n_chosen_peers:
+        # call significant eQTLs
+        df = df.query('qval<=@args.maf_thresh')
+
         # save the chosen qtl result file as parquet for fine-mapping step
-        df.to_parquet(f'{args.prefix}.{n_peer}PEERs.cis_qtl.parquet')
+        df.to_parquet(f'{args.prefix}.{n_peer}PEERs.cis_qtl.sigificant.parquet')
 
         # save the combined covariates, I don't get the file paths so 
         filename = [s for s in args.covariates if f'.{str(n_peer)}PEERs' in s][0]
