@@ -1,6 +1,5 @@
 version 1.0
 # given a group_name, go through given files and extract/pseudobulk anything corresponding to that village
-# TODO fix this to not use cp
 task pseudobulk {
   input {
     String group_name # ex. ips_D0
