@@ -8,7 +8,7 @@ task pseudobulk {
     Array[File] cell_group_map # ex. ${sample_id}_cell_to_group.txt'
     Array[File] h5ad # ex. '${sample_id}_singlets_cbc_suffix.h5ad'
     
-    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess@sha256:521ebbf10e40117118e612417fee754ab2f7bcc3ca9a3c060d5874de09d57615'
 
     Int memory=32
     Int disk_space=32
