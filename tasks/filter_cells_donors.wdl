@@ -7,8 +7,9 @@ task filter {
     File gene_gtf
     String prefix
 
-    File? donor_list
     File? gene_list
+    File? donor_list
+
     Int umis_per_cell_threshold=2000
     Int cell_per_donor_threshold=100
     # remove_pct_exp
@@ -25,8 +26,11 @@ task filter {
 
   command {
     set -euo pipefail
-    python /filter.py --donors ${donor_list} --genes ${gene_list} --thresh-umis ${umis_per_cell_threshold} \
-      --thresh-cells ${cell_per_donor_threshold} ${counts} ${cell_donor_map} ${prefix} ${gene_gtf}
+    python /filter.py --donors ${donor_list} \
+            ${"--genes" + gene_list} \
+            --thresh-umis ${umis_per_cell_threshold} \
+            --thresh-cells ${cell_per_donor_threshold} \
+            ${counts} ${cell_donor_map} ${prefix} ${gene_gtf}
   }
 
   runtime {
