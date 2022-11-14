@@ -15,7 +15,7 @@ task filter {
     Float remove_pct_exp=50 # remove bottom remove_pct_exp% of genes
     Float downscale_median_factor=2.0
     Array[String]? ignore_chr
-    String ignore_chr_pre = if defined(ignore_chr) then "--ignore_chr" else ""
+    String ignore_chr_pre = if defined(ignore_chr) then "--ignore_chr " else ""
 
     String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
 
