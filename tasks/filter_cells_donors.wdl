@@ -15,7 +15,7 @@ task filter {
     Float remove_pct_exp=50 # remove bottom remove_pct_exp% of genes
     Float downscale_median_factor=2.0
     Array[String]? ignore_chr
-    String ignore_chr_pre = if defined(ignore_chr) then "--ignore_chr " else ""
+    String ignore_chr_pre = if defined(ignore_chr) then "--ignore-chr " else ""
 
     String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
 
@@ -29,7 +29,7 @@ task filter {
     set -euo pipefail
     python /filter.py --donors ${donor_list} \
             ${"--genes" + gene_list} \
-            ${ignore_chr_pre}${sep=" --ignore_chr " ignore_chr} \
+            ${ignore_chr_pre}${sep=" --ignore-chr " ignore_chr} \
             --remove-pct-exp ${remove_pct_exp} \
             --downscale-median-factor ${downscale_median_factor} \
             --thresh-umis ${umis_per_cell_threshold} \
