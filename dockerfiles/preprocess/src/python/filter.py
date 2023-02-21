@@ -20,6 +20,8 @@ if __name__ == '__main__':
                         help="minimum # cells to keep a donor (default: %(default)s)", default=0)
     parser.add_argument('--remove-pct-exp', dest='remove_pct_exp', type=float,
                         help="remove the bottom percent of expressed genes (default: %(default)s)", default=0.0)
+    parser.add_argument('--percent-reads', dest='percent_reads', type=int,
+                        help="percent of reads to keep", default=100)
     parser.add_argument('--downscale-median-factor', dest='downscale_median_factor', type=float,
                         help="factor times median to downscale high-UMI cells (default: %(default)s)", default=2.0)
     parser.add_argument('--ignore-chr', dest='ignore_chrs', type=str,
@@ -99,12 +101,16 @@ if __name__ == '__main__':
         # group by donor
         donor_counts.loc[donor] = counts[cells.cell, keep_genes].X.sum(axis=0).ravel()
 
+        # subsample reads
+        if (args.percent_reads < 100):
+            donor_counts.loc[donor] = np.random.binomial(donor_counts.loc[donor], args.percent_reads / 100)
+
     # transpose to a Genes x Donors table
     gene_counts = donor_counts.T
     gene_counts.index.name = 'gene'
 
     # get gene info
-    gene_info = read_gtf(args.gtf)
+    gene_info = read_gtf(args.gtf, result_type='pandas')
     gene_info = gene_info.query("feature == 'gene'")
     gene_info = gene_info.groupby("gene_name").first().copy()
     gene_info['TSS'] = gene_info.start.where(gene_info.strand == '+', gene_info.end)

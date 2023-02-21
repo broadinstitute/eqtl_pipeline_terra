@@ -28,7 +28,7 @@ task filter {
 
   command {
     set -euo pipefail
-    python /filter_subsample.py --donors ${donor_list} \
+    python /filter.py --donors ${donor_list} \
             ${"--genes" + gene_list} \
             ${ignore_chr_pre}${sep=" --ignore-chr " ignore_chr} \
             --percent-reads ${pct_reads} \
