@@ -1,7 +1,7 @@
 anndata==0.8
 pandas
 matplotlib
-gtfparse
+gtfparse==2.0.1
 numpy
 qtl
 pyarrow

@@ -98,21 +98,19 @@ if __name__ == '__main__':
     # sum counts to donors
     donor_counts = pd.DataFrame(columns=keep_genes)
     for donor, cells in cell_to_donor.groupby("donor"):
-        
         # group by donor
         donor_counts.loc[donor] = counts[cells.cell, keep_genes].X.sum(axis=0).ravel()
 
         # subsample reads
         if (args.percent_reads < 100):
-            donor_counts.loc[donor] = np.random.binomial(donor_counts.loc[donor],
-                                                args.percent_reads / 100)
+            donor_counts.loc[donor] = np.random.binomial(donor_counts.loc[donor], args.percent_reads / 100)
 
     # transpose to a Genes x Donors table
     gene_counts = donor_counts.T
     gene_counts.index.name = 'gene'
 
     # get gene info
-    gene_info = read_gtf(args.gtf)
+    gene_info = read_gtf(args.gtf, result_type='pandas')
     gene_info = gene_info.query("feature == 'gene'")
     gene_info = gene_info.groupby("gene_name").first().copy()
     gene_info['TSS'] = gene_info.start.where(gene_info.strand == '+', gene_info.end)
