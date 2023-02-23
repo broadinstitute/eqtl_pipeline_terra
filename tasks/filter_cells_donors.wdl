@@ -13,6 +13,7 @@ task filter {
     Int umis_per_cell_threshold=2000
     Int cell_per_donor_threshold=100
     Int pct_reads=100
+    Int pct_cells=100
     Float remove_pct_exp=50 # remove bottom remove_pct_exp% of genes
     Float downscale_median_factor=2.0
     Array[String]? ignore_chr
@@ -32,6 +33,7 @@ task filter {
             ${"--genes" + gene_list} \
             ${ignore_chr_pre}${sep=" --ignore-chr " ignore_chr} \
             --percent-reads ${pct_reads} \
+            --percent-cells ${pct_cells} \
             --remove-pct-exp ${remove_pct_exp} \
             --downscale-median-factor ${downscale_median_factor} \
             --thresh-umis ${umis_per_cell_threshold} \
