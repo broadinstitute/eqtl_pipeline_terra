@@ -22,6 +22,8 @@ if __name__ == '__main__':
                         help="remove the bottom percent of expressed genes (default: %(default)s)", default=0.0)
     parser.add_argument('--percent-reads', dest='percent_reads', type=int,
                         help="percent of reads to keep", default=100)
+    parser.add_argument('--percent-cells', dest='percent_cells', type=int,
+                        help="percent of cells to keep", default=100)
     parser.add_argument('--downscale-median-factor', dest='downscale_median_factor', type=float,
                         help="factor times median to downscale high-UMI cells (default: %(default)s)", default=2.0)
     parser.add_argument('--ignore-chr', dest='ignore_chrs', type=str,
@@ -98,8 +100,15 @@ if __name__ == '__main__':
     # sum counts to donors
     donor_counts = pd.DataFrame(columns=keep_genes)
     for donor, cells in cell_to_donor.groupby("donor"):
+        # subsample cells
+        if (args.percent_cells < 100):
+            subsampled_cells = cells.cell[np.random.binomial(1, args.percent_cells / 100,
+                                                        len(cells.cell)).astype(np.bool)]
+        else: 
+            subsampled_cells = cells.cell
+
         # group by donor
-        donor_counts.loc[donor] = counts[cells.cell, keep_genes].X.sum(axis=0).ravel()
+        donor_counts.loc[donor] = counts[subsampled_cells, keep_genes].X.sum(axis=0).ravel()
 
         # subsample reads
         if (args.percent_reads < 100):
