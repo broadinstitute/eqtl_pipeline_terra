@@ -2,7 +2,7 @@ anndata==0.8
 pandas
 matplotlib
 gtfparse==2.0.1
-numpy
+numpy==1.23
 qtl
 pyarrow
 fastparquet
