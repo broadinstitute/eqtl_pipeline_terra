@@ -1,8 +1,8 @@
 version: 1.2
 workflows:
-   - name: "village-sceQTL"
+   - name: "village-sc-eQTL-pt1"
      subclass: WDL
-     primaryDescriptorPath: /scEQTL_wdl.wdl
+     primaryDescriptorPath: /pipeline_pt1.wdl
      testParameterFiles:
      - /test_params/sceqtl_inputs.json
      filters: 
@@ -12,7 +12,7 @@ workflows:
         tags: 
           - /.*/
 
-   - name: "QTL-mapping"
+   - name: "village-sc-eQTL-pt2"
      subclass: WDL
      primaryDescriptorPath: /pipeline_pt2.wdl
      filters: 

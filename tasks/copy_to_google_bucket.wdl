@@ -57,7 +57,7 @@ task copyFile{
     # Create a file with each line as the file to copy
     cp ${write_lines(files_2_copy)} list_of_files.txt
     # Add gs copy command to the begining of each line
-    sed -i -e 's|^|gsutil cp |' list_of_files.txt
+    sed -i -e 's|^|gsutil cp -n |' list_of_files.txt
     # Add directory to copy files to
     sed -i -e 's|$| ${output_gs_dir}|' list_of_files.txt
     

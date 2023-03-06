@@ -5,14 +5,14 @@ import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:dropseqannotatebam/ve
 import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:DropulationAssignCellsToDonors/versions/10/plain-WDL/descriptor" as donorassign
 import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:DropulationDetectDoublets_maxerr/versions/2/plain-WDL/descriptor" as detectdoublets
 import "tasks/remove_doublets.wdl" as removedoublets
-import "tasks/run_cellbender.wdl" as cellbender
+# import "tasks/run_cellbender.wdl" as cellbender
 import "tasks/cbc_modify.wdl" as cbc_modify
 
 
 # This workflow takes cellranger data to grouped pseudobulk
 workflow scEQTL_pseudobulk {
   input {
-    # sample name - will produce one cellxgene count per sample
+    # 10x sample name - will produce one cellxgene count per sample
     String sample_id
 
     # village name (ips_D0)
@@ -33,12 +33,12 @@ workflow scEQTL_pseudobulk {
     File donors_to_include
 
     # Thresholds
-    Float singlet_threshold = 0.79  # in doublet assignment
+    Float singlet_threshold = 0.75  # in doublet assignment
 
-    # Cellbender arguments
-    Int cellbender_total_droplets
-    Int cellbender_expected_cells
-    Float? cellbender_fpr = 0.01
+    # # Cellbender arguments
+    # Int cellbender_total_droplets
+    # Int cellbender_expected_cells
+    # Float? cellbender_fpr = 0.01
   }
 
   # Task calls
@@ -76,33 +76,15 @@ workflow scEQTL_pseudobulk {
     outname=sample_id
   }
 
-  # Remove doublets
-  call removedoublets.remove_doublets as doublet_removal {
+  # Filter to singlets 
+  call removedoublets.filter_to_singlets as singlet_filter {
     input:
     h5=cellranger_path + "raw_feature_bc_matrix.h5",
     doublets=doublets.doublets,
     threshold=singlet_threshold
   }
 
-  # Remove background with cellbender 
-  call cellbender.run_cellbender_remove_background_gpu as run_cellbender {
-    input:
-    input_10x_h5_file_or_mtx_directory=doublet_removal.h5ad_filtered,
-    sample_name=sample_id,
-    expected_cells=cellbender_expected_cells,
-    fpr=cellbender_fpr,
-    total_droplets_included=cellbender_total_droplets
-  }
-
-  # Filter to singlets 
-  call removedoublets.filter_to_singlets as singlet_filter {
-    input:
-    h5=run_cellbender.h5_array,
-    doublets=doublets.doublets,
-    threshold=singlet_threshold
-  }
-
-  # modify CBC
+  # Modify CBCs
   call cbc_modify.cbc_modify as run_cbc_modify {
     input:
     sample_id=sample_id, 
