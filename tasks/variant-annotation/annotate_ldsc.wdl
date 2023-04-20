@@ -1,18 +1,20 @@
 version 1.0
-# annotate with sldsc
+# annotate with ldsc
 
 task annotate_ldsc {
   input {
     File variant_file # variants should be in the format of chr:pos:ref:alt (instead of chr_pos_ref_alt)
-    File ldsc 
+    String variant_file_basename = basename(variant_file, ".parquet") 
 
-    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
+    File ldsc_tar='gs://broad-alkesgroup-public-requester-pays/LDSCORE/GRCh38/baselineLD_v2.2.tgz'
+
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/annotations:latest'
 
   }
   command {
     set -euo pipefail
-    wget https://storage.cloud.google.com/broad-alkesgroup-public-requester-pays/LDSCORE/GRCh38/baselineLD_v2.2.tgz
-    tar zxvf baselineLD_v2.2.tgz
+    tar zxvf ${ldsc_tar}
+    python /annotate_ldsc.py ${variant_file} baselineLD_v2.2 ${variant_file_basename}
   }
 
   runtime {
@@ -20,8 +22,6 @@ task annotate_ldsc {
   }
 
   output {
-    # File cell_donor_map='${sample_id}_cell_to_donor.txt'
-    # File cell_group_map='${sample_id}_cell_to_group.txt'
-    # File h5ad_renamed='${sample_id}_singlets_cbc_suffix.h5ad'
+    File ldsc_annot_parquet='${variant_file_basename}.ldsc_annots.parquet'
   }
 }

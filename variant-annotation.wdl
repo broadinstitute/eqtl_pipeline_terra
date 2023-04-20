@@ -20,8 +20,12 @@ workflow scEQTL_pseudobulk {
   }
 
   # Task calls
-  call annotate_ldsc.annotate_ldsc {
+  call annotate_ldsc.annotate_ldsc as run_annotate_ldsc {
     input:
     variant_file=variant_file,
+  }
+
+  output {
+    File ldsc_annot_parquet = run_annotate_ldsc.ldsc_annot_parquet
   }
 }
