@@ -22,6 +22,16 @@ workflows:
         tags: 
           - /.*/
 
+   - name: "variant-annotation"
+     subclass: WDL
+     primaryDescriptorPath: /variant-annotation.wdl
+     filters: 
+        branches: 
+          - main
+          - dev
+        tags: 
+          - /.*/
+
    - name: "subwf-make-qc-plots"
      subclass: WDL
      primaryDescriptorPath: /workflows/subwf-make-qc-plots.wdl
