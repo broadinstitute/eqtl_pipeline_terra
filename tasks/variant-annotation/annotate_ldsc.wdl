@@ -11,10 +11,10 @@ task annotate_ldsc {
   }
   command {
     set -euo pipefail
-    wget gs://broad-alkesgroup-public-requester-pays/LDSCORE/GRCh38/baselineLD_v2.2.tgz
+    wget https://storage.cloud.google.com/broad-alkesgroup-public-requester-pays/LDSCORE/GRCh38/baselineLD_v2.2.tgz
     tar zxvf baselineLD_v2.2.tgz
   }
-  
+
   runtime {
     docker: docker_image
   }
