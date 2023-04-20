@@ -5,11 +5,18 @@ task annotate_ldsc {
   input {
     File variant_file # variants should be in the format of chr:pos:ref:alt (instead of chr_pos_ref_alt)
     File ldsc 
+
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
+
   }
   command {
     set -euo pipefail
     wget gs://broad-alkesgroup-public-requester-pays/LDSCORE/GRCh38/baselineLD_v2.2.tgz
     tar zxvf baselineLD_v2.2.tgz
+  }
+  
+  runtime {
+    docker: docker_image
   }
 
   output {
