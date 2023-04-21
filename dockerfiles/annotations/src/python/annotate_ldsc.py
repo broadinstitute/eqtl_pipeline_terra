@@ -39,5 +39,22 @@ if __name__ == '__main__':
 
   print(f'{num/den*100:.2f}% ({num} of {den}) SNPs have a corresponding annotation')
 
+  # # TPM expression
+  # fpath = f'gs://fc-secure-57e8ee86-c06e-484b-9edf-f6a36db44e86/submissions/88383488-4911-4d58-9264-5d8e9bfeccf8/village_qtls/*/call-normalize_counts/{group_name}.TPM_expression.parquet'
+  # fname = !gsutil ls {fpath}
+
+  # phenotype_df_tpm = pd.read_parquet(fname[0])
+  # avg_exp_df = pd.DataFrame(phenotype_df_tpm.iloc[:,4:].mean(axis=1), columns=['mean_TPM'])
+  # res_df = res_df.set_index('phenotype_id')
+  # res_df = res_df.join(avg_exp_df, how='inner')
+
+  # # TSS distance
+  # res_df['tss_distance'] = res_df['variant_id'].str.split(':', expand=True)[1].astype(int) - phenotype_df_tpm.loc[res_df.index]['start']
+
+  # # reorder columns
+  # cols = list(res_df.columns)
+  # cols = cols[-2:] + cols[:-2]
+  # res_df = res_df[cols]
+
   res_df.to_csv(f'{args.variant_file_basename}.ldsc_annots.parquet')
 

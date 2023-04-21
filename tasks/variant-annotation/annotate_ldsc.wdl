@@ -9,6 +9,10 @@ task annotate_ldsc {
     File ldsc_tar='gs://broad-alkesgroup-public-requester-pays/LDSCORE/GRCh38/baselineLD_v2.2.tgz'
 
     String docker_image='us.gcr.io/landerlab-atacseq-200218/annotations:latest'
+    Int memory=32
+    Int disk_space=32
+    Int num_threads=4
+    Int num_preempt=1
 
   }
   command {
@@ -19,6 +23,11 @@ task annotate_ldsc {
 
   runtime {
     docker: docker_image
+    memory: "${memory}GB"
+    disks: "local-disk ${disk_space} HDD"
+    cpu: "${num_threads}"
+    preemptible: "${num_preempt}"
+
   }
 
   output {
