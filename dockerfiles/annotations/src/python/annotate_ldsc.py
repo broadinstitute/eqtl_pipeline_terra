@@ -56,5 +56,5 @@ if __name__ == '__main__':
   # cols = cols[-2:] + cols[:-2]
   # res_df = res_df[cols]
 
-  res_df.to_csv(f'{args.variant_file_basename}.ldsc_annots.parquet')
+  res_df.tp_parquet(f'{args.variant_file_basename}.ldsc_annots.parquet')
 
