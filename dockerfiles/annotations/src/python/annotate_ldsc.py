@@ -27,7 +27,7 @@ if __name__ == '__main__':
   num = 0; den = 0
   res_df = pd.DataFrame([])
 
-  for chrom in range(1,3):
+  for chrom in range(1,23):
       annot_dfs[chrom] = pd.read_csv(f'{args.ldscore_fpath}/baselineLD.{chrom}.annot.gz', sep='\t')
       fm_df_chr = fm_df[fm_df['chrom']==f'chr{chrom}']
       
@@ -56,5 +56,5 @@ if __name__ == '__main__':
   # cols = cols[-2:] + cols[:-2]
   # res_df = res_df[cols]
 
-  res_df.tp_parquet(f'{args.variant_file_basename}.ldsc_annots.parquet')
+  res_df.to_parquet(f'{args.variant_file_basename}.ldsc_annots.parquet')
 
