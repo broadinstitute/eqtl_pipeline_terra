@@ -22,6 +22,16 @@ workflows:
         tags: 
           - /.*/
 
+   - name: "village-mashr-preprocess"
+     subclass: WDL
+     primaryDescriptorPath: /pipeline_mashr.wdl
+     filters: 
+        branches: 
+          - main
+          - dev
+        tags: 
+          - /.*/
+
    - name: "variant-annotation"
      subclass: WDL
      primaryDescriptorPath: /variant-annotation.wdl
