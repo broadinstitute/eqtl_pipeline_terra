@@ -62,7 +62,7 @@ workflow scEQTL_pseudobulk {
     input:
     sample_id=sample_id, 
     group_name=group_name, 
-    h5=cellranger_path + "raw_feature_bc_matrix.h5",
+    h5=cellranger_path + "filtered_feature_bc_matrix.h5",
     cell_donor_assignments=donorassignment.assignments, 
   }
 
