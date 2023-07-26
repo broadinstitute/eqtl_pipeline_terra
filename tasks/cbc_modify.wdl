@@ -6,14 +6,26 @@ task cbc_modify {
   input {
     String sample_id # ex. ips_D0_CIRM12_1
     String group_name # ex. ips_D0
-    File h5ad_filtered # ex. ips_D0_CIRM12_2_out_singlets_only.h5ad 
+    File h5 # ex. ips_D0_CIRM12_2_out_singlets_only.h5ad 
     File cell_donor_assignments # ex. ips_D0_CIRM12_2_donor_assignments.txt
 
     String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
   }
+
+  String outfile = basename(h5, ".h5") + "_no_doublets.h5ad"
+
   command {
     set -euo pipefail
-    python /cbc_modify.py ${h5ad_filtered} ${cell_donor_assignments} ${sample_id} ${group_name}
+
+    python <<CODE
+    import scanpy as sc
+    
+    # Read in h5 and filter
+    ad = sc.read_10x_h5('${h5}')
+    ad.write('${outfile}')
+    CODE
+
+    python /cbc_modify.py ${outfile} ${cell_donor_assignments} ${sample_id} ${group_name}
   }
 
   runtime {

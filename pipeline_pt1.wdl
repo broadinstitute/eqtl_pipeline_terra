@@ -3,8 +3,6 @@ version 1.0
 # import other WDLs
 import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:dropseqannotatebam/versions/3/plain-WDL/descriptor" as annotate
 import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:DropulationAssignCellsToDonors/versions/10/plain-WDL/descriptor" as donorassign
-import "https://api.firecloud.org/ga4gh/v1/tools/landerlab:DropulationDetectDoublets_maxerr/versions/2/plain-WDL/descriptor" as detectdoublets
-import "tasks/remove_doublets.wdl" as removedoublets
 # import "tasks/run_cellbender.wdl" as cellbender
 import "tasks/cbc_modify.wdl" as cbc_modify
 
@@ -64,32 +62,13 @@ workflow scEQTL_pseudobulk {
     sample_names=donors_to_include,
     outname=sample_id
   }
-  
-  # Doublet detection
-  call detectdoublets.detectdoublets as doublets {
-    input:
-    likelihood_file=donorassignment.assignments,
-    whitelist=cbc_barcodes,
-    bam=annotation.annotatedbam,
-    VCF=donorassignment.outvcf,
-    sample_names=donors_to_include,
-    outname=sample_id
-  }
-
-  # Filter to singlets 
-  call removedoublets.filter_to_singlets as singlet_filter {
-    input:
-    h5=cellranger_path + "raw_feature_bc_matrix.h5",
-    doublets=doublets.doublets,
-    threshold=singlet_threshold
-  }
 
   # Modify CBCs
   call cbc_modify.cbc_modify as run_cbc_modify {
     input:
     sample_id=sample_id, 
     group_name=group_name, 
-    h5ad_filtered=singlet_filter.h5ad_filtered, 
+    h5=cellranger_path + "raw_feature_bc_matrix.h5",
     cell_donor_assignments=donorassignment.assignments, 
   }
 
