@@ -9,6 +9,7 @@ workflows:
         branches: 
           - main
           - dev
+          - remove_doublet
         tags: 
           - /.*/
 
