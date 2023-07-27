@@ -67,8 +67,7 @@ workflow scEQTL_pseudobulk {
   }
 
   output {
-    File = cell_donor_assignments=run_cbc_modify.renamed_cell_donor_assingments
-    File cell_group_map=run_cbc_modify.cell_group_map
+    File cell_donor_assignments=run_cbc_modify.renamed_cell_donor_assingments
     File h5ad=run_cbc_modify.h5ad_renamed
   }
 
