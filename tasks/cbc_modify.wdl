@@ -1,6 +1,5 @@
 version 1.0
 # add suffix to the cell barcodes so they are unique before pseudobulking
-# TODO add parameter meta
 
 task cbc_modify {
   input {
@@ -12,17 +11,28 @@ task cbc_modify {
     String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
   }
 
-  String outfile = basename(h5, ".h5") + "_no_doublets.h5ad"
+  String out_h5 = "./renamed_" + basename(h5)
+  String out_donorassign = "./renamed_" + basename(cell_donor_assignments)
 
   command {
     set -euo pipefail
 
     pip install scanpy
 
-    cp ${h5} ${outfile}
-    echo "about to run python"
-    python -vv /cbc_modify.py ${outfile} ${cell_donor_assignments} ${sample_id} ${group_name}
-    echo "done w/ python"
+    python <<EOF
+import anndata as ad
+import pandas as pd
+
+counts = ad.read_h5ad("${h5}")
+counts['cell'] += '-${sample_id}'
+counts.write(${out_h5})
+
+assignments = pd.read_table("${cell_donor_assignments}", comment='#')
+assignments['group_name'] = '${group_name}'
+assignments['cell'] = assignments['cell']  + '-${sample_id}'
+assignments.to_csv("${out_donorassign}", sep="\t", index=False)
+
+EOF
   }
 
   runtime {
@@ -30,8 +40,7 @@ task cbc_modify {
   }
 
   output {
-    File cell_donor_map='${sample_id}_cell_to_donor.txt'
-    File cell_group_map='${sample_id}_cell_to_group.txt'
-    File h5ad_renamed='${sample_id}_singlets_cbc_suffix.h5ad'
+    File renamed_cell_donor_assingments=out_donorassign
+    File h5ad_renamed=outfile
   }
 }
