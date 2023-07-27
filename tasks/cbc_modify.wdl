@@ -41,6 +41,6 @@ EOF
 
   output {
     File renamed_cell_donor_assingments=out_donorassign
-    File h5ad_renamed=outfile
+    File h5ad_renamed=out_h5
   }
 }
