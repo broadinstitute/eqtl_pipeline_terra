@@ -17,6 +17,8 @@ task cbc_modify {
   command {
     set -euo pipefail
 
+    pip install scanpy
+  
     python <<CODE
     import scanpy as sc
     
