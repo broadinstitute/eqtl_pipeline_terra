@@ -21,13 +21,11 @@ task cbc_modify {
   
     python <<CODE
     import scanpy as sc
-    
-    # Read in h5 and filter
-    ad = sc.read_10x_h5('${h5}')
-    ad.write('${outfile}')
-    CODE
 
-    python /cbc_modify.py ${outfile} ${cell_donor_assignments} ${sample_id} ${group_name}
+    cp ${h5} ${outfile}
+    echo "about to run python"
+    python -vv /cbc_modify.py ${outfile} ${cell_donor_assignments} ${sample_id} ${group_name}
+    echo "done w/ python"
   }
 
   runtime {
