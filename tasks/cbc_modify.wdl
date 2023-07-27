@@ -18,9 +18,6 @@ task cbc_modify {
     set -euo pipefail
 
     pip install scanpy
-  
-    python <<CODE
-    import scanpy as sc
 
     cp ${h5} ${outfile}
     echo "about to run python"
