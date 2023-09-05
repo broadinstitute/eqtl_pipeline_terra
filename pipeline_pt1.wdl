@@ -1,9 +1,8 @@
 version 1.0
 
 # import other WDLs
-import "tasks/donorassign.wdl" as donorassign
-# import "tasks/run_cellbender.wdl" as cellbender
 import "tasks/cbc_modify.wdl" as cbc_modify
+import "https://raw.githubusercontent.com/broadinstitute/ParallelDonorAssignment/dropulation_likelihoods/donor_assignment/donor_assignment.wdl" as donorassign
 
 
 # This workflow takes cellranger data to grouped pseudobulk
@@ -26,17 +25,18 @@ workflow scEQTL_pseudobulk {
 
     # BAM file
     File annotatedbam
-    
-    # which donors from VCF to include
-    File donors_to_include
-
     # Thresholds
     Float singlet_threshold = 0.75  # in doublet assignment
 
-    # # Cellbender arguments
-    # Int cellbender_total_droplets
-    # Int cellbender_expected_cells
-    # Float? cellbender_fpr = 0.01
+    # # Donor Assignment arguments
+    File BAI
+    Int num_splits
+    # which donors from VCF to include
+    File donor_list_file
+    File whitelist
+    String likelihood_method
+    String docker_image = 'us.gcr.io/landerlab-atacseq-200218/donor_assign:0.20'
+    String git_branch = "dropulation_likelihoods"
   }
 
   # Task calls
@@ -46,15 +46,19 @@ workflow scEQTL_pseudobulk {
 
   
   # CBC file from cellranger output directory
-  File cbc_barcodes = cellranger_path + "filtered_feature_bc_matrix/barcodes.tsv.gz"
-  call donorassign.donorassign as donorassignment {
+  File cbc_barcodes = cellranger_path + "raw_feature_bc_matrix/barcodes.tsv.gz"
+
+  call donorassign.donor_assign as donorassignment {
     input:
-    bam=annotatedbam,
-    whitelist=cbc_barcodes,
+    BAI=BAI,
+    BAM=annotatedbam,
+    num_splits=num_splits,
     VCF=VCF,
-    TBI=VCF_TBI,
-    sample_names=donors_to_include,
-    outname=sample_id
+    donor_list_file=donor_list_file,
+    whitelist=whitelist,
+    likelihood_method=likelihood_method,
+    docker_image=docker_image,
+    git_branch=git_branch
   }
 
   # Modify CBCs
@@ -62,8 +66,8 @@ workflow scEQTL_pseudobulk {
     input:
     sample_id=sample_id, 
     group_name=group_name, 
-    h5=cellranger_path + "filtered_feature_bc_matrix.h5",
-    cell_donor_assignments=donorassignment.assignments, 
+    h5=cellranger_path + "raw_feature_bc_matrix.h5",
+    cell_donor_assignments=donorassignment.singlets, 
   }
 
   output {

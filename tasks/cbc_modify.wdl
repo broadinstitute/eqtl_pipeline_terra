@@ -23,13 +23,17 @@ task cbc_modify {
 import anndata as ad
 import pandas as pd
 
-counts = ad.read_h5ad("${h5}")
+counts = sc.read_10x_h5("${h5}")
+# filter to singlets
+singlets = pd.read_table(${cell_donor_assignments})
+counts = counts[singlets.barcode, :]
+
 counts['cell'] += '-${sample_id}'
 counts.write(${out_h5})
 
-assignments = pd.read_table("${cell_donor_assignments}", comment='#')
+assignments = pd.read_table("${cell_donor_assignments}")
 assignments['group_name'] = '${group_name}'
-assignments['cell'] = assignments['cell']  + '-${sample_id}'
+assignments['cell'] = assignments['barcode']  + '-${sample_id}'
 assignments.to_csv("${out_donorassign}", sep="\t", index=False)
 
 EOF
