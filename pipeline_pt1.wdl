@@ -21,11 +21,9 @@ workflow scEQTL_pseudobulk {
     # VCF and gene info
     # Donor genotypes - should be prefiltered for HWE>=1e-7, MAF>=0.01, R2>=0.6
     File VCF
-    # tabix index for VCF
-    File VCF_TBI
 
     # BAM file
-    File annotatedbam
+    File BAM
 
     # Thresholds
     File BAI
@@ -33,7 +31,7 @@ workflow scEQTL_pseudobulk {
 
     # which donors from VCF to include
     File donor_list_file
-    
+
     File whitelist
     String likelihood_method
     String docker_image = 'us.gcr.io/landerlab-atacseq-200218/donor_assign:0.20'
@@ -48,7 +46,7 @@ workflow scEQTL_pseudobulk {
   call donorassign.donor_assign as donorassignment {
     input:
     BAI=BAI,
-    BAM=annotatedbam,
+    BAM=BAM,
     num_splits=num_splits,
     VCF=VCF,
     donor_list_file=donor_list_file,
