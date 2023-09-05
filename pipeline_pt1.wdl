@@ -44,10 +44,6 @@ workflow scEQTL_pseudobulk {
   # add slash if needed
   String cellranger_path = sub(cellranger_directory, "[/\\s]+$", "") + "/"
 
-  
-  # CBC file from cellranger output directory
-  File cbc_barcodes = cellranger_path + "raw_feature_bc_matrix/barcodes.tsv.gz"
-
   call donorassign.donor_assign as donorassignment {
     input:
     BAI=BAI,
@@ -66,7 +62,7 @@ workflow scEQTL_pseudobulk {
     input:
     sample_id=sample_id, 
     group_name=group_name, 
-    h5=cellranger_path + "raw_feature_bc_matrix.h5",
+    h5=cellranger_path + "filtered_feature_bc_matrix.h5",
     cell_donor_assignments=donorassignment.singlets, 
   }
 

@@ -5,7 +5,7 @@ task cbc_modify {
   input {
     String sample_id # ex. ips_D0_CIRM12_1
     String group_name # ex. ips_D0
-    File h5 # ex. ips_D0_CIRM12_2_out_singlets_only.h5ad 
+    File h5 # ex. filtered_feature_bc_matrix.h5
     File cell_donor_assignments # ex. ips_D0_CIRM12_2_donor_assignments.txt
 
     String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
@@ -25,13 +25,12 @@ import pandas as pd
 
 counts = sc.read_10x_h5("${h5}")
 # filter to singlets
-singlets = pd.read_table(${cell_donor_assignments})
-counts = counts[singlets.barcode, :]
+assignments = pd.read_table(${cell_donor_assignments})
+counts = counts[assignments.barcode, :]
 
 counts['cell'] += '-${sample_id}'
 counts.write(${out_h5})
 
-assignments = pd.read_table("${cell_donor_assignments}")
 assignments['group_name'] = '${group_name}'
 assignments['cell'] = assignments['barcode']  + '-${sample_id}'
 assignments.to_csv("${out_donorassign}", sep="\t", index=False)
