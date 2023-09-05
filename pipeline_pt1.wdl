@@ -16,8 +16,9 @@ workflow scEQTL_pseudobulk {
     # cellranger inputs - multiple 10x runs per sample
     String cellranger_directory
 
-    # VCF and gene info
+    # # Donor Assignment arguments
 
+    # VCF and gene info
     # Donor genotypes - should be prefiltered for HWE>=1e-7, MAF>=0.01, R2>=0.6
     File VCF
     # tabix index for VCF
@@ -25,14 +26,14 @@ workflow scEQTL_pseudobulk {
 
     # BAM file
     File annotatedbam
-    # Thresholds
-    Float singlet_threshold = 0.75  # in doublet assignment
 
-    # # Donor Assignment arguments
+    # Thresholds
     File BAI
     Int num_splits
+
     # which donors from VCF to include
     File donor_list_file
+    
     File whitelist
     String likelihood_method
     String docker_image = 'us.gcr.io/landerlab-atacseq-200218/donor_assign:0.20'
