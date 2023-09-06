@@ -48,6 +48,7 @@ EOF
 
   runtime {
     docker: docker_image
+    memory: "32GB"
   }
 
   output {
