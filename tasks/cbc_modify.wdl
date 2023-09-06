@@ -11,7 +11,7 @@ task cbc_modify {
     String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
   }
 
-  String out_h5 = "./renamed_" + basename(h5)
+  String out_h5 = "./renamed_" + basename(sample_id) + ".h5ad"
   String out_cell_to_donor = basename(sample_id) + "_cell_to_donor.txt"
   String out_cell_to_group = basename(sample_id) + "_cell_to_group.txt"
 
