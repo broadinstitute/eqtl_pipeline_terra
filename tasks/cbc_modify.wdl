@@ -25,7 +25,7 @@ import pandas as pd
 
 counts = sc.read_10x_h5("${h5}")
 # filter to singlets
-assignments = pd.read_table(${cell_donor_assignments})
+assignments = pd.read_table("${cell_donor_assignments}")
 counts = counts[assignments.barcode, :]
 
 counts['cell'] += '-${sample_id}'
