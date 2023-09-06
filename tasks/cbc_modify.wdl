@@ -24,6 +24,7 @@ task cbc_modify {
     python <<EOF
 import anndata as ad
 import pandas as pd
+import scanpy as sc
 
 counts = sc.read_10x_h5("${h5}")
 # filter to singlets
