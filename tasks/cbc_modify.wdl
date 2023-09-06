@@ -12,7 +12,9 @@ task cbc_modify {
   }
 
   String out_h5 = "./renamed_" + basename(h5)
-  String out_donorassign = "./renamed_" + basename(cell_donor_assignments)
+  String out_cell_to_donor = basename(sample_id) + "_cell_to_donor.txt"
+  String out_cell_to_group = basename(sample_id) + "_cell_to_group.txt"
+
 
   command {
     set -euo pipefail
@@ -28,12 +30,17 @@ counts = sc.read_10x_h5("${h5}")
 assignments = pd.read_table("${cell_donor_assignments}")
 counts = counts[assignments.barcode, :]
 
-counts['cell'] += '-${sample_id}'
-counts.write(${out_h5})
+counts.obs.index += '-${sample_id}'
+counts.write_h5ad("${out_h5}")
 
 assignments['group_name'] = '${group_name}'
 assignments['cell'] = assignments['barcode']  + '-${sample_id}'
-assignments.to_csv("${out_donorassign}", sep="\t", index=False)
+
+cell_donor_maps = assignments[['cell', 'bestSample']]
+cell_group_maps = assignments[['cell', 'group_name']]
+
+cell_donor_maps.to_csv('${out_cell_to_donor}', sep='\t', index=False)
+cell_group_maps.to_csv('${out_cell_to_group}', sep='\t', index=False)
 
 EOF
   }
@@ -43,7 +50,8 @@ EOF
   }
 
   output {
-    File renamed_cell_donor_assingments=out_donorassign
+    File cell_donor_map=out_cell_to_donor
+    File cell_group_map=out_cell_to_group
     File h5ad_renamed=out_h5
   }
 }

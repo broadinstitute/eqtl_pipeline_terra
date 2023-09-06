@@ -66,7 +66,8 @@ workflow scEQTL_pseudobulk {
   }
 
   output {
-    File cell_donor_assignments=run_cbc_modify.renamed_cell_donor_assingments
+    File cell_donor_map=run_cbc_modify.cell_donor_map
+    File cell_group_map=run_cbc_modify.cell_group_map
     File h5ad=run_cbc_modify.h5ad_renamed
     File total_barcode_donor_likelihoods = donorassignment.total_barcode_donor_likelihoods
     File loglik_per_umi_plot = donorassignment.loglik_per_umi_plot
