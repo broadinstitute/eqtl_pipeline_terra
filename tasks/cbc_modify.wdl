@@ -21,17 +21,21 @@ task cbc_modify {
 
     pip install scanpy
 
-    python <<EOF
+    python -u <<EOF
 import anndata as ad
 import pandas as pd
 import scanpy as sc
 
+print("Starting up cbc modify.")
 counts = sc.read_10x_h5("${h5}")
+print("h5 successfully loaded.")
+
 # filter to singlets
 assignments = pd.read_table("${cell_donor_assignments}")
 counts = counts[assignments.barcode, :]
 
 counts.obs.index += '-${sample_id}'
+print("Saving off subset h5ad.")
 counts.write_h5ad("${out_h5}")
 
 assignments['group_name'] = '${group_name}'
@@ -40,8 +44,10 @@ assignments['cell'] = assignments['barcode']  + '-${sample_id}'
 cell_donor_maps = assignments[['cell', 'bestSample']]
 cell_group_maps = assignments[['cell', 'group_name']]
 
+print("Saving off cell maps.")
 cell_donor_maps.to_csv('${out_cell_to_donor}', sep='\t', index=False)
 cell_group_maps.to_csv('${out_cell_to_group}', sep='\t', index=False)
+print("Done.")
 
 EOF
   }
