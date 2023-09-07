@@ -34,6 +34,7 @@ workflow scEQTL_pseudobulk {
 
     File whitelist
     String likelihood_method
+    Float? singlet_threshold
     String docker_image = 'us.gcr.io/landerlab-atacseq-200218/donor_assign:0.20'
     String git_branch = "dropulation_likelihoods"
   }
@@ -52,6 +53,7 @@ workflow scEQTL_pseudobulk {
     donor_list_file=donor_list_file,
     whitelist=whitelist,
     likelihood_method=likelihood_method,
+    singlet_threshold=singlet_threshold,
     docker_image=docker_image,
     git_branch=git_branch
   }
