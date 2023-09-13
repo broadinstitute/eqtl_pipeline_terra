@@ -86,14 +86,13 @@ if __name__ == '__main__':
     if args.gene_list != 'ALL':
         keep_genes = pd.read_csv(args.gene_list, sep='\t', header=None)[0].values
     elif 0 < args.remove_pct_exp < 100:
-        keep_genes_factor = (100 - args.remove_pct_exp) / 100.0
-        keep_genes_count = int(math.ceil(counts.n_vars * keep_genes_factor))
+        fraction_remove = args.remove_pct_exp / 100
         cell_counts = counts[cell_to_donor.cell, :]
         expression_per_gene = cell_counts.X.sum(axis=0).ravel()
-        # Get the top keep_genes_count by index
-        # Via: https://stackoverflow.com/questions/6910641#answer-23734295
-        keep_genes_ind = np.argpartition(expression_per_gene, -keep_genes_count)[-keep_genes_count:]
-        keep_genes = cell_counts.var_names[keep_genes_ind]
+        gene_exp_series = pd.Series(data=expression_per_gene, index=cell_counts.var_names)
+        # drop genes with expression 0, and then remove remaining percentage
+        threshold = gene_exp_series[gene_exp_series > 0].quantile(fraction_remove)
+        keep_genes = gene_exp_series[gene_exp_series > threshold].index
     else:
         keep_genes = counts.var_names  # all the genes in the count matrix
 
@@ -104,7 +103,7 @@ if __name__ == '__main__':
         if (args.percent_cells < 100):
             subsampled_cells = cells.cell[np.random.binomial(1, args.percent_cells / 100,
                                                         len(cells.cell)).astype(np.bool)]
-        else: 
+        else:
             subsampled_cells = cells.cell
 
         # group by donor
