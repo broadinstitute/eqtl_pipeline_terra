@@ -10,6 +10,7 @@ import "tasks/run_tensorqtl_cis_permutations.wdl" as run_tensorqtl_cis_permutati
 import "tasks/peer_selection.wdl" as peer_selection
 import "tasks/run_tensorqtl_cis_nominal.wdl" as run_tensorqtl_cis_nominal
 import "tasks/run_tensorqtl_susie.wdl" as run_tensorqtl_susie
+import "tasks/X_expression.wdl" as X_expression
 
 # This workflow takes pseudobulked data and maps eQTLs
 workflow village_qtls {
@@ -45,15 +46,15 @@ workflow village_qtls {
   # Make QC plots for UMIs/cell, genes/cell, cells/donor
   call qc.qc_plots as qc_plots {
     input:
-      counts=run_pseudobulk.counts, 
+      counts=run_pseudobulk.counts,
       cell_donor_map=run_pseudobulk.cell_donor_map_group,
       prefix=group_name,
   }
 
-  # Filter donors, genes, cells (and downscale large cells) 
+  # Filter donors, genes, cells (and downscale large cells)
   call filter.filter as filter_cells_donors {
     input:
-      counts=run_pseudobulk.counts, 
+      counts=run_pseudobulk.counts,
       cell_donor_map=run_pseudobulk.cell_donor_map_group,
       gene_gtf=gene_gtf,
       prefix=group_name,
@@ -63,34 +64,34 @@ workflow village_qtls {
   # TODO combine the indexing step
   call normalize.normalize as normalize_counts {
     input:
-      counts_filtered=filter_cells_donors.counts_filtered, 
+      counts_filtered=filter_cells_donors.counts_filtered,
       prefix=group_name,
   }
 
   call normalize.index_bed as index_bed_tpm {
     input:
-      bed=normalize_counts.bed_tpm, 
+      bed=normalize_counts.bed_tpm,
   }
 
   call normalize.index_bed as index_bed_int {
     input:
-      bed=normalize_counts.bed_int, 
+      bed=normalize_counts.bed_int,
   }
 
   # Run PEER with the max number of factors in the range
   call run_peer.all_peer_factors as all_peer_factors {
     input:
       expression_file=index_bed_int.bed_gz,
-      n_all_peers=n_all_peers, 
+      n_all_peers=n_all_peers,
       prefix=group_name,
   }
 
-  # Subset for the PEERs to test 
+  # Subset for the PEERs to test
   scatter (n_peer in peer_range) {
     call run_peer.subset_peers_and_combine as subset_peers_and_combine {
       input:
         n_peer=n_peer,
-        peer_covariates=all_peer_factors.peer_covariates, 
+        peer_covariates=all_peer_factors.peer_covariates,
         prefix=group_name,
     }
   }
@@ -98,12 +99,12 @@ workflow village_qtls {
   # Run tensorQTL cis permutations for each number of PEER correction
   scatter(file in subset_peers_and_combine.combined_covariates) {
     call run_tensorqtl_cis_permutations.tensorqtl_cis_permutations as cis_permutations {
-      input: 
-        covariates=file, 
-        plink_bed=plink_bed, 
-        plink_bim=plink_bim, 
-        plink_fam=plink_fam, 
-        phenotype_bed=index_bed_int.bed_gz, 
+      input:
+        covariates=file,
+        plink_bed=plink_bed,
+        plink_bim=plink_bim,
+        plink_fam=plink_fam,
+        phenotype_bed=index_bed_int.bed_gz,
     }
   }
 
@@ -116,25 +117,31 @@ workflow village_qtls {
       prefix=group_name,
   }
 
+  call X_expression.add_X_covariates as add_X_covariates {
+    input:
+      covariates=run_peer_selection.chosen_peer_covariates,
+      parquet_tpm=normalize_counts.parquet_tpm
+  }
+
   # Run tensorQTL cis nominal scan for significant cis-eQTLs
   call run_tensorqtl_cis_nominal.tensorqtl_cis_nominal as cis_nominal {
-    input: 
-      plink_bed=plink_bed, 
-      plink_bim=plink_bim, 
-      plink_fam=plink_fam, 
-      phenotype_bed=index_bed_int.bed_gz, 
-      covariates=run_peer_selection.chosen_peer_covariates, 
+    input:
+      plink_bed=plink_bed,
+      plink_bim=plink_bim,
+      plink_fam=plink_fam,
+      phenotype_bed=index_bed_int.bed_gz,
+      covariates=add_X_covariates.chosen_peer_covariates,
       prefix=group_name,
   }
 
   # Run tensorQTL SuSiE fine-mapping scan for significant cis-eQTLs
   call run_tensorqtl_susie.tensorqtl_cis_susie as cis_susie {
-    input: 
-      plink_bed=plink_bed, 
-      plink_bim=plink_bim, 
-      plink_fam=plink_fam, 
-      phenotype_bed=index_bed_int.bed_gz, 
-      covariates=run_peer_selection.chosen_peer_covariates, 
+    input:
+      plink_bed=plink_bed,
+      plink_bim=plink_bim,
+      plink_fam=plink_fam,
+      phenotype_bed=index_bed_int.bed_gz,
+      covariates=add_X_covariates.chosen_peer_covariates,
       prefix=group_name,
       cis_output=run_peer_selection.chosen_peer_qtls,
   }
@@ -149,7 +156,7 @@ workflow village_qtls {
     # count matrices and covariates
     File counts_tpm=normalize_counts.parquet_tpm
     File counts_int=normalize_counts.parquet_int
-    File final_covariates=run_peer_selection.chosen_peer_covariates
+    File final_covariates=add_X_covariates.chosen_peer_covariates
 
     # qtl results
     File qtl_perm=run_peer_selection.chosen_peer_qtls
