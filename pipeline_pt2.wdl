@@ -120,7 +120,8 @@ workflow village_qtls {
   call X_expression.add_X_covariates as add_X_covariates {
     input:
       covariates=run_peer_selection.chosen_peer_covariates,
-      parquet_tpm=normalize_counts.parquet_tpm
+      parquet_tpm=normalize_counts.parquet_tpm,
+      prefix=group_name
   }
 
   # Run tensorQTL cis nominal scan for significant cis-eQTLs
@@ -152,6 +153,8 @@ workflow village_qtls {
     File gene_cell_png=qc_plots.gene_cell_png
     File cell_donor_png=qc_plots.cell_donor_png
     File peer_png=run_peer_selection.peer_png
+    File XIST_expression_png=add_X_covariates.XIST_expression_plot
+    File X_expression_density_png=add_X_covariates.density_X_expression_plot
 
     # count matrices and covariates
     File counts_tpm=normalize_counts.parquet_tpm
