@@ -5,110 +5,111 @@ workflows:
      primaryDescriptorPath: /pipeline_pt1.wdl
      testParameterFiles:
      - /test_params/sceqtl_inputs.json
-     filters: 
-        branches: 
+     filters:
+        branches:
           - main
           - dev
           - remove_doublet
-        tags: 
+        tags:
           - /.*/
 
    - name: "village-sc-eQTL-pt2"
      subclass: WDL
      primaryDescriptorPath: /pipeline_pt2.wdl
-     filters: 
-        branches: 
+     filters:
+        branches:
           - main
           - dev
-        tags: 
+          - remove_doublet
+        tags:
           - /.*/
 
    - name: "village-mashr-preprocess"
      subclass: WDL
      primaryDescriptorPath: /pipeline_mashr.wdl
-     filters: 
-        branches: 
+     filters:
+        branches:
           - main
           - dev
-        tags: 
+        tags:
           - /.*/
 
    - name: "variant-annotation"
      subclass: WDL
      primaryDescriptorPath: /variant-annotation.wdl
-     filters: 
-        branches: 
+     filters:
+        branches:
           - main
           - dev
-        tags: 
+        tags:
           - /.*/
 
    - name: "subwf-make-qc-plots"
      subclass: WDL
      primaryDescriptorPath: /workflows/subwf-make-qc-plots.wdl
-     filters: 
-        branches: 
+     filters:
+        branches:
           - main
           - dev
-        tags: 
+        tags:
           - /.*/
 
    - name: "subwf-filter-cells-donors"
      subclass: WDL
      primaryDescriptorPath: /workflows/subwf-filter-cells-donors.wdl
-     filters: 
-        branches: 
+     filters:
+        branches:
           - main
           - dev
-        tags: 
+        tags:
           - /.*/
 
    - name: "subwf-run-peer"
      subclass: WDL
      primaryDescriptorPath: /workflows/subwf-run-peer.wdl
-     filters: 
-        branches: 
+     filters:
+        branches:
           - main
           - dev
-        tags: 
+        tags:
           - /.*/
 
    - name: "subwf-qtl-map-each-peer"
      subclass: WDL
      primaryDescriptorPath: /workflows/subwf-qtl-map-each-peer.wdl
-     filters: 
-        branches: 
+     filters:
+        branches:
           - main
           - dev
-        tags: 
+        tags:
           - /.*/
 
    - name: "subwf-qtl-map-nominal"
      subclass: WDL
      primaryDescriptorPath: /workflows/subwf-qtl-map-nominal.wdl
-     filters: 
-        branches: 
+     filters:
+        branches:
           - main
           - dev
-        tags: 
+        tags:
           - /.*/
 
    - name: "test-peer-selection"
      subclass: WDL
      primaryDescriptorPath: /tasks/peer_selection.wdl
-     filters: 
-        branches: 
+     filters:
+        branches:
           - main
           - dev
-        tags: 
+        tags:
           - /.*/
 
    - name: "test-cbc-modify"
      subclass: WDL
      primaryDescriptorPath: /tasks/cbc_modify.wdl
-     filters: 
-        branches: 
+     filters:
+        branches:
           - main
           - dev
-        tags: 
+        tags:
           - /.*/
