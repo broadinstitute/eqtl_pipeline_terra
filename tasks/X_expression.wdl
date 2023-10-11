@@ -9,6 +9,7 @@ task add_X_covariates{
 
     command {
         set -euo pipefail
+        pip install seaborn
         python /X_expression.py ${parquet_tpm} ${covariates}
     }
 
