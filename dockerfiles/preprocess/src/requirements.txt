@@ -6,3 +6,4 @@ numpy==1.23
 qtl
 pyarrow
 fastparquet
+seaborn

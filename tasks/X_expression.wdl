@@ -9,7 +9,6 @@ task add_X_covariates{
 
     command {
         set -euo pipefail
-        pip install seaborn
         python /X_expression.py ${parquet_tpm} ${covariates}
     }
 
@@ -20,6 +19,6 @@ task add_X_covariates{
     }
 
     runtime {
-        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8"
+        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.2"
     }
 }
