@@ -4,7 +4,7 @@ task normalize {
     File counts_filtered
     String prefix
 
-    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.1'
   }
 
   command {
@@ -40,7 +40,7 @@ task normalize {
             help: 'Docker image for preprocessing. Dependencies: Python 3',
             example: 'us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:v8'
         }
-    
+
     # Outputs
     parquet_tpm: {
             description: 'TPM normalized count matrix as parquet',

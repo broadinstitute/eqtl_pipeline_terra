@@ -8,7 +8,7 @@ task cbc_modify {
     File h5 # ex. filtered_feature_bc_matrix.h5
     File cell_donor_assignments # ex. ips_D0_CIRM12_2_donor_assignments.txt
 
-    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.1'
   }
 
   String out_h5 = "./renamed_" + basename(sample_id) + ".h5ad"

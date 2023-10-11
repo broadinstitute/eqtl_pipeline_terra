@@ -9,7 +9,7 @@ task peer_selection {
 
     Float fdr=0.05
 
-    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.1'
   }
 
   command {

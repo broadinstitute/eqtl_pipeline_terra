@@ -5,7 +5,7 @@ task qc_plots {
     File counts
     File cell_donor_map
     String prefix
-    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.1'
 
     Int memory=32
     Int disk_space=32

@@ -19,7 +19,7 @@ task filter {
     Array[String]? ignore_chr
     String ignore_chr_pre = if defined(ignore_chr) then "--ignore-chr " else ""
 
-    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:latest'
+    String docker_image='us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.1'
 
     Int memory=64
     Int disk_space=32
