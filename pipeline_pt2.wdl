@@ -121,7 +121,6 @@ workflow village_qtls {
     input:
       covariates=run_peer_selection.chosen_peer_covariates,
       parquet_tpm=normalize_counts.parquet_tpm,
-      prefix=group_name
   }
 
   # Run tensorQTL cis nominal scan for significant cis-eQTLs

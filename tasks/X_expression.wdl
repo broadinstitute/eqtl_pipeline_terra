@@ -4,7 +4,6 @@ task add_X_covariates{
     input {
         File covariates
         File parquet_tpm
-        String prefix
     }
 
     command {
@@ -14,8 +13,8 @@ task add_X_covariates{
 
     output {
         File chosen_peer_covariates="${covariates}"
-        File XIST_expression_plot="${prefix}_XIST_expression.png"
-        File density_X_expression_plot="${prefix}_X_expression_density.png"
+        File XIST_expression_plot="XIST_expression.png"
+        File density_X_expression_plot="X_expression_density.png"
     }
 
     runtime {
