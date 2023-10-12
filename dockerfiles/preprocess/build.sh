@@ -1,1 +1,1 @@
-gcloud builds submit --timeout=20m --tag us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.2
+gcloud builds submit --timeout=20m --tag us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.3

@@ -23,6 +23,7 @@ def main():
         )
     parser.add_argument("parquet_tpm", type=str)
     parser.add_argument("covariates", type=str)
+    parser.add_argument("outfile", type=str)
     args = parser.parse_args()
 
     # donor expression in TPM
@@ -42,7 +43,7 @@ def main():
 
     # overwrite covs
     print("saving csv")
-    peer_selection_output.reset_index().to_csv(args.covariates, sep='\t', index=False)
+    peer_selection_output.reset_index().to_csv(args.outfile, sep='\t', index=False)
 
     # generate QC plots
     print("Generating QC plots")
