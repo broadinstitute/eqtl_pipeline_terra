@@ -2,7 +2,7 @@ version 1.0
 
 # import other WDLs
 import "tasks/cbc_modify.wdl" as cbc_modify
-import "https://raw.githubusercontent.com/broadinstitute/ParallelDonorAssignment/dropulation_likelihoods/donor_assignment/donor_assignment.wdl" as donorassign
+import "https://raw.githubusercontent.com/broadinstitute/ParallelDonorAssignment/main/donor_assignment/donor_assignment.wdl" as donorassign
 
 
 # This workflow takes cellranger data to grouped pseudobulk
