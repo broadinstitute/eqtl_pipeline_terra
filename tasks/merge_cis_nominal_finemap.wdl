@@ -18,6 +18,6 @@ task merge_cis_nominal_with_finemap{
     }
 
     runtime {
-        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.3"
+        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.4"
     }
 }

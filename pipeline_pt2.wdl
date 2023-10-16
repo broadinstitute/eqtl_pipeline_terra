@@ -11,6 +11,7 @@ import "tasks/peer_selection.wdl" as peer_selection
 import "tasks/run_tensorqtl_cis_nominal.wdl" as run_tensorqtl_cis_nominal
 import "tasks/run_tensorqtl_susie.wdl" as run_tensorqtl_susie
 import "tasks/X_expression.wdl" as X_expression
+import "tasks/merge_cis_nominal_finemap.wdl" as merge_cis_nominal_finemap
 
 # This workflow takes pseudobulked data and maps eQTLs
 workflow village_qtls {
@@ -146,6 +147,13 @@ workflow village_qtls {
       cis_output=run_peer_selection.chosen_peer_qtls,
   }
 
+  # merge SuSiE fine-mapping and cis-nominals
+  call merge_cis_nominal_finemap.merge_cis_nominal_with_finemap as merge_results {
+    input:
+      qtl_nominal=cis_nominal.chr_parquet,
+      qtl_finemap=cis_susie.parquet
+  }
+
   output {
     # plots
     File umi_cell_png=qc_plots.umi_cell_png
@@ -163,7 +171,7 @@ workflow village_qtls {
     # qtl results
     File qtl_perm=run_peer_selection.chosen_peer_qtls
     Array[File] qtl_nominal=cis_nominal.chr_parquet
-    File qtl_finemap=cis_susie.parquet
+    File qtl_finemap=merge_results.parquet
   }
 
 }
