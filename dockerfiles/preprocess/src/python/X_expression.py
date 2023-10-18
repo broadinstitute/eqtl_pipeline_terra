@@ -39,7 +39,6 @@ def main():
 
     # Add X expression for all donors, and females only as covariates
     peer_selection_output.loc['norm_X_expression'] = norm_X_expr
-    peer_selection_output.loc['norm_X_females'] = peer_selection_output.apply(lambda x: x.norm_X_expression if x.sex == 0 else 0)
 
     # overwrite covs
     print("saving csv")

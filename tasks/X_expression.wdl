@@ -20,6 +20,6 @@ task add_X_covariates{
     }
 
     runtime {
-        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.3"
+        docker: "us.gcr.io/landerlab-atacseq-200218/eqtl_preprocess:0.5"
     }
 }
