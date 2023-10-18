@@ -10,7 +10,7 @@ task merge_cis_nominal_with_finemap{
 
     command {
         set -euo pipefail
-        python /merge_cis_nominal_with_finemap.py ${qtl_finemap} ${outfile} -c ${sep=' ' qtl_nominal}
+        python /merge_cis_nominal_finemap.py ${qtl_finemap} ${outfile} -c ${sep=' ' qtl_nominal}
     }
 
     output {
