@@ -20,7 +20,7 @@ def main():
         cis_nom = pd.read_parquet(cis_nominal_fname)
         merged_finemap_nominal[i] = finemapped_results.merge(cis_nom, on=['phenotype_id', 'variant_id', 'af'])
 
-    pd.concat(merged_finemap_nominal).to_csv(args.outfile, sep='\t', index=False)
+    pd.concat(merged_finemap_nominal).to_parquet(args.outfile)
 
 if __name__ == "__main__":
     main()
