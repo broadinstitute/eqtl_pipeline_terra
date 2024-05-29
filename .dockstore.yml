@@ -21,6 +21,7 @@ workflows:
           - main
           - dev
           - remove_doublet
+          - already_INT
         tags:
           - /.*/
 
