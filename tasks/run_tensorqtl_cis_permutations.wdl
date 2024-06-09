@@ -14,6 +14,7 @@ task tensorqtl_cis_permutations {
     Float? fdr
     Float? qvalue_lambda
     Float? maf_thresh
+    Int? cis_window
 
     Int memory=32
     Int disk_space=32
@@ -29,6 +30,7 @@ task tensorqtl_cis_permutations {
       --covariates ${covariates} \
       ${"--phenotype_groups " + phenotype_groups} \
       ${"--fdr " + fdr} \
+      ${"--window " cis_window} \
       ${"--qvalue_lambda " + qvalue_lambda} \
       ${"--maf_threshold " + maf_thresh}
   }
