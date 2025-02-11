@@ -10,6 +10,7 @@ import "tasks/run_tensorqtl_cis_permutations.wdl" as run_tensorqtl_cis_permutati
 import "tasks/peer_selection.wdl" as peer_selection
 import "tasks/run_tensorqtl_cis_nominal.wdl" as run_tensorqtl_cis_nominal
 import "tasks/run_tensorqtl_susie.wdl" as run_tensorqtl_susie
+import "tasks/run_tensorqtl_trans.wdl" as run_tensorqtl_trans
 import "tasks/X_expression.wdl" as X_expression
 import "tasks/merge_cis_nominal_finemap.wdl" as merge_cis_nominal_finemap
 
@@ -108,6 +109,17 @@ workflow village_qtls {
       qtl_finemap=cis_susie.parquet
   }
 
+  # Run tensorQTL trans scan for significant trans-eQTLs
+  call run_tensorqtl_trans.tensorqtl_trans as trans_qtls {
+    input:
+      plink_bed=plink_bed,
+      plink_bim=plink_bim,
+      plink_fam=plink_fam,
+      phenotype_bed=index_bed_int.bed_gz,
+      covariates=run_peer_selection.chosen_peer_covariates,
+      prefix=group_name,
+  }
+
   output {
     # plots
 #    File umi_cell_png=qc_plots.umi_cell_png
@@ -126,6 +138,7 @@ workflow village_qtls {
     File qtl_perm=run_peer_selection.chosen_peer_qtls
     Array[File] qtl_nominal=cis_nominal.chr_parquet
     File qtl_finemap=merge_results.parquet
+    Array[File] qtl_trans=trans_qtls.chr_parquet
   }
 
 }
