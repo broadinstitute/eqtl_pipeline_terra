@@ -27,7 +27,6 @@ task tensorqtl_trans {
       --mode trans \
       --covariates ${covariates} \
       ${"--maf_threshold " + maf_threshold} \
-      ${"--interaction " + interaction} \
       ${"--phenotype_groups " + phenotype_groups}
   }
 
