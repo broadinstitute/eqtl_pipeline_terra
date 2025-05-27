@@ -11,7 +11,7 @@ def main():
                         help="Array of strings (filenames) of cis-nominal results")
     args = parser.parse_args()
 
-    print("READING IN FINEMAPPED RESULTS")
+    print("READING IN FINEMAPPED RESULTS") # CAPITAL PRINTS ARE NOT updated in docker version 0.6 for this task!!
     finemapped_results = pd.read_parquet(args.qtl_finemap)
     print("DONE: READING IN FINEMAPPED RESULTS")
     merged_finemap_nominal = {}
